@@ -10,4 +10,6 @@ public class Editora:EntidadBase
     public int CodigoEditora { get; set; }
     public string NombreEditora { get; set; } = null!;
     public string? Descripcion { get; set; }
+
+    public ICollection<Libro>? Libros { get; set; }
 }

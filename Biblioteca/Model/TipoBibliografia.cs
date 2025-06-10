@@ -10,4 +10,6 @@ public class TipoBibliografia : EntidadBase
     public int CodigoBibliografia { get; set; }
     public string NombreBibliografia { get; set; } = null!;
     public string? Descripcion { get; set; }
+
+    public ICollection<LibroBibliografia> LibrosBibliografias { get; set; } = [];
 }
