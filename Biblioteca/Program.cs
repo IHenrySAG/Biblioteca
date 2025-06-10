@@ -1,5 +1,7 @@
-using Biblioteca.Datos.Persistencia;
-using Biblioteca.Negocio.Logica;
+using Biblioteca;
+using Biblioteca.Servicios;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +9,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddPersistencia(builder.Configuration);
-builder.Services.AddNegocioLogica();
+#region Configuración de la base de datos
+// Configuración de la cadena de conexión
+var connectionString = builder.Configuration.GetConnectionString("Biblioteca");
+
+// Configuración del contexto de la base de datos
+builder.Services.AddDbContext<ContextoBiblioteca>(options =>
+    options.UseSqlServer(connectionString));
+#endregion
+
+#region Configuración de los servicios de negocio
+builder.Services.AddTransient(typeof(ServicioBase<>), typeof(ServicioBase<>));
+#endregion
+
 
 var app = builder.Build();
 

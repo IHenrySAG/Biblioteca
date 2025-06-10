@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Biblioteca.Datos.Persistencia;
-using Biblioteca.Datos.Persistencia.Dominio;
+using Biblioteca.Model;
+
 
 namespace Biblioteca.Presentacion.Web.Controllers
 {
