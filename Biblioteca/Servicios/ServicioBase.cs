@@ -10,31 +10,40 @@ namespace Biblioteca.Servicios;
 public class ServicioBase<T>(ContextoBiblioteca context) 
     where T : EntidadBase
 {
-    public async Task<List<T>> ObtenerTodosAsync()
+    public virtual async Task<List<T>> ObtenerTodosAsync()
     {
-        return await context.Set<T>().ToListAsync();
+        return await context.Set<T>()
+            .Where(x=>!(x.Eliminado??false))
+            .ToListAsync();
     }
 
-    public async Task<T?> ObtenerPorIdAsync(int id)
+    public IQueryable<T> Query()
     {
-        return await context.Set<T>().FindAsync(id);
+        return context.Set<T>();
     }
 
-    public async Task<T> AgregarAsync(T entidad)
+    public virtual async Task<T?> ObtenerPorIdAsync(int id)
+    {
+        var entidad= await context.Set<T>().FindAsync(id);
+        if (entidad?.Eliminado ?? false) return null;
+        return entidad;
+    }
+
+    public virtual async Task<T> AgregarAsync(T entidad)
     {
         context.Set<T>().Add(entidad);
         await context.SaveChangesAsync();
         return entidad;
     }
 
-    public async Task<T> ActualizarAsync(T entidad)
+    public virtual async Task<T> ActualizarAsync(T entidad)
     {
         context.Set<T>().Update(entidad);
         await context.SaveChangesAsync();
         return entidad;
     }
 
-    public async Task<bool> EliminarAsync(int id)
+    public virtual async Task<bool> EliminarAsync(int id)
     {
         var entidad = await ObtenerPorIdAsync(id);
         if (entidad == null)
@@ -42,7 +51,7 @@ public class ServicioBase<T>(ContextoBiblioteca context)
             return false;
         }
 
-        entidad.Estado = false; // Marcar como eliminado
+        entidad.Eliminado = true; // Marcar como eliminado
         context.Set<T>().Update(entidad);
         await context.SaveChangesAsync();
         return true;

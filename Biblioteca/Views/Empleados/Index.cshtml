@@ -1,0 +1,45 @@
+@model IEnumerable<Biblioteca.Model.Empleado>
+
+@{
+    ViewData["Title"] = "Lista de Empleados";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Empleado</a>
+    <h1>Lista de empleados</h1>
+    <div></div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Cédula</th>
+            <th>Tanda Laboral</th>
+            <th>Comisión (%)</th>
+            <th>Fecha Ingreso</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.CodigoEmpleado)</td>
+                <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+                <td>@Html.DisplayFor(modelItem => item.Apellido)</td>
+                <td>@Html.DisplayFor(modelItem => item.Cedula)</td>
+                <td>@Html.DisplayFor(modelItem => item.TandaLabor.NombreTanda)</td>
+                <td>@Html.DisplayFor(modelItem => item.PorcentajeComision)</td>
+                <td>@Html.DisplayFor(modelItem => item.FechaIngreso)</td>
+                <td>
+                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoEmpleado">Ver detalles</a>
+                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoEmpleado">Edit</a>
+                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoEmpleado">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

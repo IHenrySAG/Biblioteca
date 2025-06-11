@@ -11,7 +11,6 @@ public class Autor:EntidadBase
     public string NombreAutor { get; set; } = null!;
     public string? PaisOrigen { get; set; }
     public int CodigoIdioma { get; set; }
-    public bool? Estado { get; set; }
 
     public Idioma? Idioma { get; set; }
     public ICollection<LibroAutor>? LibrosAutores { get; set; }

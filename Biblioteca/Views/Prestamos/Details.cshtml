@@ -1,0 +1,40 @@
+@model Biblioteca.Model.Prestamo
+
+@{
+    ViewData["Title"] = "Detalles Préstamo " + Model.CodigoPrestamo;
+}
+
+<div>
+    <h3>Detalles del Préstamo @Model.CodigoPrestamo</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Codigo Préstamo</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CodigoPrestamo)
+        </dd>
+        <dt class="col-sm-2">Empleado</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Empleado.Nombre)
+        </dd>
+        <dt class="col-sm-2">Libro</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Libro.Titulo)
+        </dd>
+        <dt class="col-sm-2">Usuario</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Usuario.Nombre)
+        </dd>
+        <dt class="col-sm-2">Cantidad Días</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CantidadDias)
+        </dd>
+        <dt class="col-sm-2">Comentario</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Comentario)
+        </dd>
+    </dl>
+    <div class="form-group d-flex mt-3">
+        <a asp-action="Edit" class="btn btn-success" asp-route-id="@Model.CodigoPrestamo">Editar</a>
+        <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
+    </div>
+</div>

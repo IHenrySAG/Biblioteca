@@ -1,42 +1,60 @@
 @model Biblioteca.Model.Libro
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles "+Model.Titulo;
 }
 
-<h1>Details</h1>
-
 <div>
-    <h4>Libro</h4>
+    <h3>Detalles de @Model.Titulo</h3>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NombreAutor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NombreAutor)
+        <dt class="col-sm-2">Codigo Libro</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CodigoLibro)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PaisOrigen)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PaisOrigen)
+        <dt class="col-sm-2">Titulo</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Idioma)
-        </dt>
-        <dd class = "col-sm-10">
+        <dt class="col-sm-2">Signatura Topografica</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SignaturaTopografica)
+        </dd>
+        <dt class="col-sm-2">Isbn</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Isbn)
+        </dd>
+        <dt class="col-sm-2">Editora</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Editora.NombreEditora)
+        </dd>
+        <dt class="col-sm-2">Año Publicacion</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AnioPublicacion)
+        </dd>
+        <dt class="col-sm-2">Ciencia</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Ciencia)
+        </dd>
+        <dt class="col-sm-2">Idioma</dt>
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Idioma.NombreIdioma)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
+        @if (Model.LibrosBibliografias.Count > 0)
+        {
+            <dt class="col-sm-2">Bibliografias</dt>
+            <dd class="col-sm-10">
+                <ul>
+                    @foreach (var item in Model.LibrosBibliografias)
+                    {
+                        <li>@Html.DisplayFor(modelItem => item.TipoBibliografia.NombreBibliografia)</li>
+                    }
+                </ul>
+            </dd>
+        }
     </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.CodigoLibro">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="form-group d-flex mt-3">
+        <a asp-action="Edit" class="btn btn-success">Editar</a>
+        <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
+    </div>
 </div>

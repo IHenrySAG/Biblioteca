@@ -37,7 +37,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(t => t.CodigoBibliografia).HasColumnName("CODIGO_BIBLIOGRAFIA");
             builder.Property(t => t.NombreBibliografia).HasColumnName("NOMBRE_BIBLIOGRAFIA").HasMaxLength(30).IsRequired();
             builder.Property(t => t.Descripcion).HasColumnName("DESCRIPCION");
-            builder.Property(t => t.Estado).HasColumnName("ESTADO");
+            builder.Property(t => t.Eliminado).HasColumnName("ELIMINADO");
         });
 
         // EDITORAS
@@ -48,7 +48,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(e => e.CodigoEditora).HasColumnName("CODIGO_EDITORA");
             builder.Property(e => e.NombreEditora).HasColumnName("NOMBRE_EDITORA").HasMaxLength(30).IsRequired();
             builder.Property(e => e.Descripcion).HasColumnName("DESCRIPCION");
-            builder.Property(e => e.Estado).HasColumnName("ESTADO");
+            builder.Property(e => e.Eliminado).HasColumnName("ELIMINADO");
         });
 
         // IDIOMAS
@@ -58,7 +58,7 @@ public class ContextoBiblioteca: DbContext
             builder.HasKey(i => i.CodigoIdioma);
             builder.Property(i => i.CodigoIdioma).HasColumnName("CODIGO_IDIOMA");
             builder.Property(i => i.NombreIdioma).HasColumnName("NOMBRE_IDIOMA").HasMaxLength(15).IsRequired();
-            builder.Property(i => i.Estado).HasColumnName("ESTADO");
+            builder.Property(i => i.Eliminado).HasColumnName("ELIMINADO");
         });
 
         // AUTORES
@@ -70,7 +70,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(a => a.NombreAutor).HasColumnName("NOMBRE_AUTOR").HasMaxLength(60).IsRequired();
             builder.Property(a => a.PaisOrigen).HasColumnName("PAIS_ORIGEN").HasMaxLength(50);
             builder.Property(a => a.CodigoIdioma).HasColumnName("CODIGO_IDIOMA").IsRequired();
-            builder.Property(a => a.Estado).HasColumnName("ESTADO");
+            builder.Property(a => a.Eliminado).HasColumnName("ELIMINADO");
             builder.HasOne(a => a.Idioma)
                 .WithMany(i => i.Autores)
                 .HasForeignKey(a => a.CodigoIdioma)
@@ -90,7 +90,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(l => l.AnioPublicacion).HasColumnName("ANIO_PUBLICACION").IsRequired();
             builder.Property(l => l.Ciencia).HasColumnName("CIENCIA").HasMaxLength(30);
             builder.Property(l => l.CodigoIdioma).HasColumnName("CODIGO_IDIOMA").IsRequired();
-            builder.Property(l => l.Estado).HasColumnName("ESTADO");
+            builder.Property(l => l.Eliminado).HasColumnName("ELIMINADO");
             builder.HasOne(l => l.Editora)
                 .WithMany(e => e.Libros)
                 .HasForeignKey(l => l.CodigoEditora)
@@ -151,19 +151,80 @@ public class ContextoBiblioteca: DbContext
             builder.Property(p => p.MontoDia).HasColumnName("MONTO_DIA").HasColumnType("decimal(10,2)");
             builder.Property(p => p.CantidadDias).HasColumnName("CANTIDAD_DIAS");
             builder.Property(p => p.Comentario).HasColumnName("COMENTARIO");
-            builder.Property(p => p.Estado).HasColumnName("ESTADO");
-            builder.HasOne(p => p.Empleado)
-                .WithMany()
-                .HasForeignKey(p => p.CodigoEmpleado)
-                .HasConstraintName("FK_EMPLEADO_PRESTAMO");
-            builder.HasOne(p => p.Libro)
-                .WithMany(l => l.Prestamos)
-                .HasForeignKey(p => p.CodigoLibro)
-                .HasConstraintName("FK_LIBRO_PRESTAMO");
-            builder.HasOne(p => p.Usuario)
-                .WithMany()
-                .HasForeignKey(p => p.CodigoUsuario)
-                .HasConstraintName("FK_USUARIO_PRESTAMO");
+            builder.Property(p => p.Eliminado).HasColumnName("ELIMINADO");
+            //builder.HasOne(p => p.Empleado)
+            //    .WithMany()
+            //    .HasForeignKey(p => p.CodigoEmpleado)
+            //    .HasConstraintName("FK_EMPLEADO_PRESTAMO");
+            //builder.HasOne(p => p.Libro)
+            //    .WithMany(l => l.Prestamos)
+            //    .HasForeignKey(p => p.CodigoLibro)
+            //    .HasConstraintName("FK_LIBRO_PRESTAMO");
+            //builder.HasOne(p => p.Usuario)
+            //    .WithMany()
+            //    .HasForeignKey(p => p.CodigoUsuario)
+            //    .HasConstraintName("FK_USUARIO_PRESTAMO");
+        });
+
+        // EMPLEADOS
+        modelBuilder.Entity<Empleado>(builder =>
+        {
+            builder.ToTable("EMPLEADOS");
+            builder.HasKey(e => e.CodigoEmpleado);
+            builder.Property(e => e.CodigoEmpleado).HasColumnName("CODIGO_EMPLEADO");
+            builder.Property(e => e.Nombre).HasColumnName("NOMBRE").HasMaxLength(80).IsRequired();
+            builder.Property(e => e.Apellido).HasColumnName("APELLIDO").HasMaxLength(80).IsRequired();
+            builder.Property(e => e.Cedula).HasColumnName("CEDULA").HasMaxLength(11).IsRequired();
+            builder.Property(e => e.CodigoTanda).HasColumnName("CODIGO_TANDA").IsRequired();
+            builder.Property(e => e.PorcentajeComision).HasColumnName("PORCENTAJE_COMISION");
+            builder.Property(e => e.FechaIngreso).HasColumnName("FECHA_INGRESO");
+            builder.Property(e => e.Eliminado).HasColumnName("ELIMINADO");
+
+            builder.HasOne(e => e.TandaLabor)
+                .WithMany(t => t.Empleados)
+                .HasForeignKey(e => e.CodigoTanda)
+                .HasConstraintName("FK_TANDA_EMPLEADO");
+        });
+
+        // TANDA_LABOR
+        modelBuilder.Entity<TandaLabor>(builder =>
+        {
+            builder.ToTable("TANDA_LABOR");
+            builder.HasKey(t => t.CodigoTanda);
+            builder.Property(t => t.CodigoTanda).HasColumnName("CODIGO_TANDA");
+            builder.Property(t => t.NombreTanda).HasColumnName("NOMBRE_TANDA").HasMaxLength(50); // Ajusta el tamaño si es necesario
+            builder.Property(t => t.HoraInicio).HasColumnName("HORA_INICIO").IsRequired();
+            builder.Property(t => t.HoraFin).HasColumnName("HORA_FIN").IsRequired();
+            builder.Property(t => t.Eliminado).HasColumnName("ELIMINADO");
+        });
+
+        // TIPO_PERSONAS
+        modelBuilder.Entity<TipoPersona>(builder =>
+        {
+            builder.ToTable("TIPOS_PERSONAS");
+            builder.HasKey(tp => tp.CodigoTipo);
+            builder.Property(tp => tp.CodigoTipo).HasColumnName("CODIGO_TIPO");
+            builder.Property(tp => tp.NombreTipo).HasColumnName("NOMBRE_TIPO").HasMaxLength(8).IsRequired();
+            builder.Property(tp => tp.Eliminado).HasColumnName("ELIMINADO");
+        });
+
+        // USUARIOS
+        modelBuilder.Entity<Usuario>(builder =>
+        {
+            builder.ToTable("USUARIOS");
+            builder.HasKey(u => u.CodigoUsuario);
+            builder.Property(u => u.CodigoUsuario).HasColumnName("CODIGO_USUARIO");
+            builder.Property(u => u.Nombre).HasColumnName("NOMBRE").HasMaxLength(80).IsRequired();
+            builder.Property(u => u.Apellido).HasColumnName("APELLIDO").HasMaxLength(80).IsRequired();
+            builder.Property(u => u.Cedula).HasColumnName("CEDULA").HasMaxLength(11).IsRequired();
+            builder.Property(u => u.NumeroCarnet).HasColumnName("NUMERO_CARNET").HasMaxLength(10).IsRequired();
+            builder.Property(u => u.CodigoTipo).HasColumnName("CODIGO_TIPO").IsRequired();
+            builder.Property(u => u.Eliminado).HasColumnName("ELIMINADO");
+
+            builder.HasOne(u => u.TipoPersona)
+                .WithMany(tp => tp.Usuarios)
+                .HasForeignKey(u => u.CodigoTipo)
+                .HasConstraintName("FK_TIPO_PERSONA_USUARIO");
         });
 
         base.OnModelCreating(modelBuilder);

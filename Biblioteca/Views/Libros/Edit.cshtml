@@ -1,47 +1,55 @@
 @model Biblioteca.Model.Libro
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Libro";
 }
 
-<h1>Edit</h1>
-
-<h4>Libro</h4>
+<h4>Editar Libro</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CodigoLibro" />
-            <div class="form-group">
-                <label asp-for="NombreAutor" class="control-label"></label>
-                <input asp-for="NombreAutor" class="form-control" />
-                <span asp-validation-for="NombreAutor" class="text-danger"></span>
+            <input asp-for="CodigoLibro" type="hidden"/>
+            <div class="form-group mb-3">
+                <label asp-for="Titulo" class="control-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="PaisOrigen" class="control-label"></label>
-                <input asp-for="PaisOrigen" class="form-control" />
-                <span asp-validation-for="PaisOrigen" class="text-danger"></span>
+            <div class="form-group mb-3">
+                <label asp-for="SignaturaTopografica" class="control-label"></label>
+                <input asp-for="SignaturaTopografica" class="form-control" />
+                <span asp-validation-for="SignaturaTopografica" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
+                <label asp-for="Isbn" class="control-label"></label>
+                <input asp-for="Isbn" class="form-control" />
+                <span asp-validation-for="Isbn" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CodigoEditora" class="control-label"></label>
+                <select asp-for="CodigoEditora" class="form-control" asp-items="ViewBag.Editoras"></select>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="AnioPublicacion" class="control-label"></label>
+                <input asp-for="AnioPublicacion" class="form-control" />
+                <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Ciencia" class="control-label"></label>
+                <input asp-for="Ciencia" class="form-control" />
+                <span asp-validation-for="Ciencia" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="CodigoIdioma" class="control-label"></label>
-                <select asp-for="CodigoIdioma" class="form-control" asp-items="ViewBag.CodigoIdioma"></select>
-                <span asp-validation-for="CodigoIdioma" class="text-danger"></span>
+                <select asp-for="CodigoIdioma" class="form-control" asp-items="ViewBag.Idiomas"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group d-flex mt-4">
+                <input type="submit" value="Editar" class="btn btn-success" />
+                <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

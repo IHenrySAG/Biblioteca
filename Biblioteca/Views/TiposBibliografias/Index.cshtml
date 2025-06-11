@@ -1,0 +1,37 @@
+@model IEnumerable<Biblioteca.Model.TipoBibliografia>
+
+@{
+    ViewData["Title"] = "Lista de Tipos de Bibliografía";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Tipo de Bibliografía</a>
+    <h1>Lista de tipos de bibliografía</h1>
+    <div></div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.CodigoBibliografia)</td>
+                <td>@Html.DisplayFor(modelItem => item.NombreBibliografia)</td>
+                <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+                <td>
+                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoBibliografia">Ver detalles</a>
+                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoBibliografia">Edit</a>
+                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoBibliografia">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

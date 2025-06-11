@@ -1,0 +1,43 @@
+@model IEnumerable<Biblioteca.Model.Editora>
+
+@{
+    ViewData["Title"] = "Lista de Editoras";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a class="btn btn-success align-self-end" asp-action="Create">Nueva Editora</a>
+    <h1>Lista de editoras</h1>
+    <div></div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CodigoEditora)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreEditora)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+                    <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.CodigoEditora">Edit</a>
+                    <a class="btn btn-danger ms-2" asp-action="Delete" asp-route-id="@item.CodigoEditora">Delete</a>
+                    <a class="btn btn-info ms-2 text-white" asp-action="Details" asp-route-id="@item.CodigoEditora">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

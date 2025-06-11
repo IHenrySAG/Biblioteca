@@ -1,0 +1,35 @@
+@model IEnumerable<Biblioteca.Model.Idioma>
+
+@{
+    ViewData["Title"] = "Lista de Idiomas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Idioma</a>
+    <h1>Lista de idiomas</h1>
+    <div></div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.CodigoIdioma)</td>
+                <td>@Html.DisplayFor(modelItem => item.NombreIdioma)</td>
+                <td>
+                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoIdioma">Ver detalles</a>
+                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoIdioma">Edit</a>
+                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoIdioma">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

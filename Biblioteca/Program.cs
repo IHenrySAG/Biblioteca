@@ -20,6 +20,15 @@ builder.Services.AddDbContext<ContextoBiblioteca>(options =>
 
 #region Configuración de los servicios de negocio
 builder.Services.AddTransient(typeof(ServicioBase<>), typeof(ServicioBase<>));
+builder.Services.AddTransient<AutorServicio>();
+builder.Services.AddTransient<EditoraServicio>();
+builder.Services.AddTransient<EmpleadoServicio>();
+builder.Services.AddTransient<IdiomaServicio>();
+builder.Services.AddTransient<LibroServicio>();
+builder.Services.AddTransient<PrestamoServicio>();
+builder.Services.AddTransient<TandaLaborServicio>();
+builder.Services.AddTransient<TipoBibliografiaServicio>();
+builder.Services.AddTransient<UsuarioServicio>();
 #endregion
 
 

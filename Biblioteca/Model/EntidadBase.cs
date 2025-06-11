@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 namespace Biblioteca.Model;
 public class EntidadBase
 {
-    public bool? Estado { get; set; }
+    public bool? Eliminado { get; set; }
 }

@@ -1,0 +1,34 @@
+@model Biblioteca.Model.TandaLabor
+
+@{
+    ViewData["Title"] = "Borrar Tanda Laboral";
+}
+
+<h3>¿Está seguro que desea eliminar esta tanda laboral?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Codigo Tanda</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CodigoTanda)
+        </dd>
+        <dt class="col-sm-2">Nombre</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NombreTanda)
+        </dd>
+        <dt class="col-sm-2">Hora Inicio</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.HoraInicio)
+        </dd>
+        <dt class="col-sm-2">Hora Fin</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.HoraFin)
+        </dd>
+    </dl>
+
+    <form class="d-flex" asp-action="Delete">
+        <input type="hidden" asp-for="CodigoTanda" />
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
+    </form>
+</div>

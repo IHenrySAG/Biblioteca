@@ -1,51 +1,60 @@
 @model IEnumerable<Biblioteca.Model.Libro>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista de Libros";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Libro</a>
+    <h1>Lista de libros</h1>
+    <div></div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreAutor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PaisOrigen)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Idioma)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
+            <th>Codigo</th>
+            <th>Titulo</th>
+            <th>Editorial</th>
+            <th>Ciencia</th>
+            <th>Idioma</th>
+            <th>Anio</th>
+            <th>Signatura Topologicas</th>
+            <th>ISBN</th>
+            <th>Accion</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.NombreAutor)
+                @Html.DisplayFor(modelItem => item.CodigoLibro)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PaisOrigen)
+                @Html.DisplayFor(modelItem => item.Titulo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Idioma.NombreIdioma)
+                @Html.DisplayFor(modelItem => item.Editora.NombreEditora)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Estado)
+                @Html.DisplayFor(modelItem => item.Ciencia)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Idioma.NombreIdioma)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AnioPublicacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SignaturaTopografica)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Isbn)
+                </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.CodigoLibro">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CodigoLibro">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CodigoLibro">Delete</a>
+                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoLibro">Ver detalles</a>
+                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoLibro">Edit</a>
+                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoLibro">Delete</a>
             </td>
         </tr>
 }
