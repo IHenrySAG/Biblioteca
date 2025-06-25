@@ -9,6 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = "SGB-Unapec.Session"; // Tiempo de expiración de la sesión
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de expiración de la sesión
+    options.Cookie.HttpOnly = true; // La cookie de sesión no es accesible desde JavaScript
+    options.Cookie.IsEssential = true; // La cookie es esencial para el funcionamiento del sitio
+});
+
 #region Configuración de la base de datos
 // Configuración de la cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("Biblioteca");
@@ -48,6 +56,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseSession();
 
 //app.MapRazorPages();
 
