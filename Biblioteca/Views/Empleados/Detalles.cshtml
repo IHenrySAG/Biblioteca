@@ -36,6 +36,14 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.FechaIngreso)
         </dd>
+        <dt class="col-sm-2">Nombre Usuario</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NombreUsuario)
+        </dd>
+        <dt class="col-sm-2">Rol</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Rol.NombreRol)
+        </dd>
         @if (Model.Prestamos != null && Model.Prestamos.Count > 0)
         {
             <dt class="col-sm-2">Préstamos</dt>
@@ -45,7 +53,7 @@
                     {
                         <li>
                             @Html.DisplayFor(modelItem => item.Libro.Titulo)
-                            (Usuario: @Html.DisplayFor(modelItem => item.Usuario.Nombre))
+                            (Estudiante: @Html.DisplayFor(modelItem => item.Estudiante.Nombre))
                         </li>
                     }
                 </ul>

@@ -2,32 +2,42 @@
     ViewData["Title"] = "Iniciar Sesion";
     Layout = null;
 }
+@model IndexModel
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/login.css">
     <title>Login</title>
 </head>
 <body>
     <div class="login-container">
-        <div class="avatar-circle">
-            <img src="~/img/avatar.png" alt="Avatar" class="avatar">
-        </div>
-        <div class="input-group">
-            <img src="~/img/correo.png" alt="Mail Icon" class="input-icon">
-            <input type="text" placeholder="User" />
-        </div>
-        <div class="input-group">
-            <img src="~/img/candado.png" alt="Lock Icon" class="input-icon">
-            <input type="password" placeholder="Password" />
-        </div>
-        <div class="forgot">
-            <a href="#">Forgot Password??</a>
-        </div>
-        <button class="login-btn">LOGIN</button>
+        <form asp-action="Index" method="post">
+            <div class="avatar-circle">
+                <img src="~/img/avatar.png" alt="Avatar" class="avatar">
+            </div>
+            <div class="input-group">
+                <img src="~/img/correo.png" alt="Mail Icon" class="input-icon">
+                <input asp-for="Username" type="text" placeholder="User" />
+            </div>
+            <div class="input-group">
+                <img src="~/img/candado.png" alt="Lock Icon" class="input-icon">
+                <input asp-for="Password" type="password" placeholder="Password" />
+            </div>
+            <div class="input-group">
+                @if (!string.IsNullOrEmpty(Model?.ErrorMessage))
+                {
+                    <span class="text-danger">@Model.ErrorMessage</span>
+                }
+            </div>
+            @* <div class="forgot"> *@
+            @*     <a href="#">Forgot Password??</a> *@
+            @* </div> *@
+            <button class="login-btn" type="submit">LOGIN</button>
+        </form>
     </div>
 </body>
 </html>

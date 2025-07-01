@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
+using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR))]
     public class AutoresController(
         ContextoBiblioteca context,
         AutorServicio service,

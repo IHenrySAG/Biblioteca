@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
+using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
+    [Authorization(nameof(ERoles.ADMIN))]
     public class UsuariosController(
         ContextoBiblioteca context,
         UsuarioServicio service,
@@ -48,7 +50,7 @@ namespace Biblioteca.Controllers
         // POST: Usuarios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoUsuario,Nombre,Apellido,Cedula,NumeroCarnet,CodigoTipo,Estado")] Usuario usuario)
+        public async Task<IActionResult> Create([Bind("CodigoUsuario,Nombre,Apellido,Cedula,NumeroCarnet,CodigoTipo,Estado")] Estudiante usuario)
         {
             if (ModelState.IsValid)
             {
@@ -87,9 +89,9 @@ namespace Biblioteca.Controllers
         // POST: Usuarios/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoUsuario,Nombre,Apellido,Cedula,NumeroCarnet,CodigoTipo,Estado")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, [Bind("CodigoUsuario,Nombre,Apellido,Cedula,NumeroCarnet,CodigoTipo,Estado")] Estudiante usuario)
         {
-            if (id != usuario.CodigoUsuario)
+            if (id != usuario.CodigoEstudiante)
                 return NotFound();
 
             if (ModelState.IsValid)
@@ -100,7 +102,7 @@ namespace Biblioteca.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsuarioExists(usuario.CodigoUsuario))
+                    if (!UsuarioExists(usuario.CodigoEstudiante))
                         return NotFound();
                     else
                         throw;
@@ -140,7 +142,7 @@ namespace Biblioteca.Controllers
 
         private bool UsuarioExists(int id)
         {
-            return context.Usuarios.Any(u => u.CodigoUsuario == id);
+            return context.Estudiantes.Any(u => u.CodigoEstudiante == id);
         }
     }
 }

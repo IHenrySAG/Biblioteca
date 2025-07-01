@@ -3,15 +3,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
+using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.BIBLIOTECARIO))]
     public class PrestamosController(
         ContextoBiblioteca context,
         PrestamoServicio service,
         ServicioBase<Empleado> servicioEmpleado,
         ServicioBase<Libro> servicioLibro,
-        ServicioBase<Usuario> servicioUsuario
+        ServicioBase<Estudiante> servicioUsuario
     ) : Controller
     {
         // GET: Prestamos

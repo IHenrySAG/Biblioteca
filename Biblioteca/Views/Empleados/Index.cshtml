@@ -16,10 +16,8 @@
             <th>Codigo</th>
             <th>Nombre</th>
             <th>Apellido</th>
-            <th>Cédula</th>
             <th>Tanda Laboral</th>
-            <th>Comisión (%)</th>
-            <th>Fecha Ingreso</th>
+            <th>Rol</th>
             <th>Accion</th>
         </tr>
     </thead>
@@ -30,12 +28,10 @@
                 <td>@Html.DisplayFor(modelItem => item.CodigoEmpleado)</td>
                 <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
                 <td>@Html.DisplayFor(modelItem => item.Apellido)</td>
-                <td>@Html.DisplayFor(modelItem => item.Cedula)</td>
                 <td>@Html.DisplayFor(modelItem => item.TandaLabor.NombreTanda)</td>
-                <td>@Html.DisplayFor(modelItem => item.PorcentajeComision)</td>
-                <td>@Html.DisplayFor(modelItem => item.FechaIngreso)</td>
+                <td>@Html.DisplayFor(modelItem => item.Rol.NombreRol)</td>
                 <td>
-                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoEmpleado">Ver detalles</a>
+                    <a class="btn btn-success" asp-action="Detalles" asp-route-id="@item.CodigoEmpleado">Ver detalles</a>
                     <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoEmpleado">Edit</a>
                     <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoEmpleado">Delete</a>
                 </td>

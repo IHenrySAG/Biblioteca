@@ -3,18 +3,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Biblioteca.Pages
 {
-    public class IndexModel : PageModel
+    public class IndexModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string? ErrorMessage { get; set; }
 
-        public IndexModel(ILogger<IndexModel> logger)
-        {
-            _logger = logger;
-        }
-
-        public void OnGet()
-        {
-
-        }
     }
 }

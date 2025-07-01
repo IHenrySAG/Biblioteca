@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Biblioteca.Model;
-public class Usuario:EntidadBase
+public class Estudiante:EntidadBase
 {
-    public int CodigoUsuario { get; set; }
+    public int CodigoEstudiante { get; set; }
     public string Nombre { get; set; } = null!;
     public string Apellido { get; set; } = null!;
     public string Cedula { get; set; } = null!;

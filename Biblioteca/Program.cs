@@ -1,4 +1,5 @@
 using Biblioteca;
+using Biblioteca.Common;
 using Biblioteca.Servicios;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
@@ -7,7 +8,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<NoAuthorizationFilter>();
+builder.Services.AddScoped<AuthorizationFilter>();
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.AddService<NoAuthorizationFilter>();
+    options.Filters.AddService<AuthorizationFilter>();
+});
 
 builder.Services.AddSession(options =>
 {
@@ -66,5 +76,12 @@ app.UseEndpoints(endpoints =>
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 });
+
+using(var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    await SeedDatabase.SeedAdmin(serviceProvider);
+}
+
 
 app.Run();

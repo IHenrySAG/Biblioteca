@@ -11,5 +11,5 @@ public class TipoPersona:EntidadBase
     public int CodigoTipo { get; set; }
     public string NombreTipo { get; set; } = null!;
 
-    public ICollection<Usuario> Usuarios { get; set; }
+    public ICollection<Estudiante> Estudiantes { get; set; }
 }

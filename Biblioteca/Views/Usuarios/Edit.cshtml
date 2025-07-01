@@ -1,16 +1,16 @@
-@model Biblioteca.Model.Usuario
+@model Biblioteca.Model.Estudiante
 
 @{
-    ViewData["Title"] = "Editar Usuario";
+    ViewData["Title"] = "Editar Estudiante";
 }
 
-<h4>Editar Usuario</h4>
+<h4>Editar Estudiante</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="CodigoUsuario" type="hidden" />
+            <input asp-for="CodigoEstudiante" type="hidden" />
             <div class="form-group mb-3">
                 <label asp-for="Nombre" class="control-label"></label>
                 <input asp-for="Nombre" class="form-control" />

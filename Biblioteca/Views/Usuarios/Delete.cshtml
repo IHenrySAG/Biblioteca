@@ -1,16 +1,16 @@
-@model Biblioteca.Model.Usuario
+@model Biblioteca.Model.Estudiante
 
 @{
-    ViewData["Title"] = "Borrar Usuario";
+    ViewData["Title"] = "Borrar Estudiante";
 }
 
 <h3>¿Está seguro que desea eliminar este usuario?</h3>
 <div>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">Codigo Usuario</dt>
+        <dt class="col-sm-2">Codigo Estudiante</dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CodigoUsuario)
+            @Html.DisplayFor(model => model.CodigoEstudiante)
         </dd>
         <dt class="col-sm-2">Nombre</dt>
         <dd class="col-sm-10">
@@ -35,7 +35,7 @@
     </dl>
 
     <form class="d-flex" asp-action="Delete">
-        <input type="hidden" asp-for="CodigoUsuario" />
+        <input type="hidden" asp-for="CodigoEstudiante" />
         <input type="submit" value="Delete" class="btn btn-danger" />
         <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
     </form>

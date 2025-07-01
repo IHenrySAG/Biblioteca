@@ -1,11 +1,11 @@
-@model IEnumerable<Biblioteca.Model.Usuario>
+@model IEnumerable<Biblioteca.Model.Estudiante>
 
 @{
     ViewData["Title"] = "Lista de Usuarios";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Usuario</a>
+    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Estudiante</a>
     <h1>Lista de usuarios</h1>
     <div></div>
 </div>
@@ -26,16 +26,16 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.CodigoUsuario)</td>
+                <td>@Html.DisplayFor(modelItem => item.CodigoEstudiante)</td>
                 <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
                 <td>@Html.DisplayFor(modelItem => item.Apellido)</td>
                 <td>@Html.DisplayFor(modelItem => item.Cedula)</td>
                 <td>@Html.DisplayFor(modelItem => item.NumeroCarnet)</td>
                 <td>@Html.DisplayFor(modelItem => item.TipoPersona.NombreTipo)</td>
                 <td>
-                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoUsuario">Ver detalles</a>
-                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoUsuario">Edit</a>
-                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoUsuario">Delete</a>
+                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoEstudiante">Ver detalles</a>
+                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoEstudiante">Edit</a>
+                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoEstudiante">Delete</a>
                 </td>
             </tr>
         }

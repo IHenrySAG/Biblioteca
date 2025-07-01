@@ -1,0 +1,50 @@
+@model Biblioteca.Views.Empleados.CambiarContrasenia
+
+@{
+    ViewData["Title"] = "Cambiar Contraseña";
+}
+
+<h4>Editar Empleado</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <p>Cambiar contrasenia de @ViewBag.NombreUsuario</p>
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="CodigoEmpleado" type="hidden" />
+            <div class="form-group mb-3">
+                <label asp-for="ContraseniaActual" class="control-label"></label>
+                <input asp-for="ContraseniaActual" class="form-control" type="password" />
+                <span asp-validation-for="ContraseniaActual" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="NuevaContrasenia" class="control-label"></label>
+                <input asp-for="NuevaContrasenia" class="form-control" type="password" />
+                <span asp-validation-for="NuevaContrasenia" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ConfirmarContrasenia" class="control-label"></label>
+                <input asp-for="ConfirmarContrasenia" class="form-control" type="password" />
+                <span asp-validation-for="ConfirmarContrasenia" class="text-danger"></span>
+            </div>
+            <div class="form-group d-flex mt-4">
+                <input type="submit" value="Cambiar" class="btn btn-success" />
+
+                @if (ViewBag.IsAdmin)
+                {
+                    <a class="btn btn-danger ms-2" asp-action="Index">Cancelar</a>
+                }
+                else
+                {
+                    <a class="btn btn-danger ms-2" asp-action="Detalles" asp-route-id="@Model.CodigoEmpleado">Cancelar</a>
+                }
+                </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -10,7 +10,7 @@ public class Prestamo:EntidadBase
     public int CodigoPrestamo { get; set; }
     public int CodigoEmpleado { get; set; }
     public int CodigoLibro { get; set; }
-    public int CodigoUsuario { get; set; }
+    public int CodigoEstudiante { get; set; }
     public DateOnly FechaPrestamo { get; set; }
     public DateOnly? FechaDevolucion { get; set; }
     public decimal? MontoDia { get; set; }
@@ -19,5 +19,5 @@ public class Prestamo:EntidadBase
 
     public Empleado? Empleado { get; set; }
     public Libro? Libro { get; set; }
-    public Usuario? Usuario { get; set; }
+    public Estudiante? Estudiante { get; set; }
 }

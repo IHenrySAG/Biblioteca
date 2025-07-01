@@ -22,10 +22,11 @@ public class ContextoBiblioteca: DbContext
     public DbSet<LibroAutor> LibrosAutores { get; set; }
     public DbSet<LibroBibliografia> LibrosBibliografias { get; set; }
     public DbSet<Prestamo> Prestamos { get; set; }
+    public DbSet<Rol> Roles { get; set; }
     public DbSet<TandaLabor> TandasLabor { get; set; }
     public DbSet<TipoBibliografia> TiposBibliografias { get; set; }
     public DbSet<TipoPersona> TiposPersonas { get; set; }
-    public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<Estudiante> Estudiantes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -145,32 +146,41 @@ public class ContextoBiblioteca: DbContext
             builder.Property(p => p.CodigoPrestamo).HasColumnName("CODIGO_PRESTAMO");
             builder.Property(p => p.CodigoEmpleado).HasColumnName("CODIGO_EMPLEADO").IsRequired();
             builder.Property(p => p.CodigoLibro).HasColumnName("CODIGO_LIBRO").IsRequired();
-            builder.Property(p => p.CodigoUsuario).HasColumnName("CODIGO_USUARIO").IsRequired();
+            builder.Property(p => p.CodigoEstudiante).HasColumnName("CODIGO_ESTUDIANTE").IsRequired();
             builder.Property(p => p.FechaPrestamo).HasColumnName("FECHA_PRESTAMO").IsRequired();
             builder.Property(p => p.FechaDevolucion).HasColumnName("FECHA_DEVOLUCION");
             builder.Property(p => p.MontoDia).HasColumnName("MONTO_DIA").HasColumnType("decimal(10,2)");
             builder.Property(p => p.CantidadDias).HasColumnName("CANTIDAD_DIAS");
             builder.Property(p => p.Comentario).HasColumnName("COMENTARIO");
             builder.Property(p => p.Eliminado).HasColumnName("ELIMINADO");
-            //builder.HasOne(p => p.Empleado)
-            //    .WithMany()
-            //    .HasForeignKey(p => p.CodigoEmpleado)
-            //    .HasConstraintName("FK_EMPLEADO_PRESTAMO");
-            //builder.HasOne(p => p.Libro)
-            //    .WithMany(l => l.Prestamos)
-            //    .HasForeignKey(p => p.CodigoLibro)
-            //    .HasConstraintName("FK_LIBRO_PRESTAMO");
-            //builder.HasOne(p => p.Usuario)
-            //    .WithMany()
-            //    .HasForeignKey(p => p.CodigoUsuario)
-            //    .HasConstraintName("FK_USUARIO_PRESTAMO");
+            builder.HasOne(p => p.Empleado)
+                .WithMany(e=>e.Prestamos)
+                .HasForeignKey(p => p.CodigoEmpleado)
+                .HasConstraintName("FK_EMPLEADO_PRESTAMO");
+            builder.HasOne(p => p.Libro)
+                .WithMany(l => l.Prestamos)
+                .HasForeignKey(p => p.CodigoLibro)
+                .HasConstraintName("FK_LIBRO_PRESTAMO");
+            builder.HasOne(p => p.Estudiante)
+                .WithMany(e=>e.Prestamos)
+                .HasForeignKey(p => p.CodigoEstudiante)
+                .HasConstraintName("FK_ESTUDIANTE_PRESTAMO");
+        });
+
+        // ROLES
+        modelBuilder.Entity<Rol>(entity =>
+        {
+            entity.ToTable("ROLES");
+            entity.HasKey(e => e.CodigoRol).HasName("PK_ROLES");
+            entity.Property(e => e.CodigoRol).HasColumnName("CODIGO_ROL").ValueGeneratedOnAdd();
+            entity.Property(e => e.NombreRol).HasColumnName("NOMBRE_ROL").IsRequired().HasMaxLength(15);
+            entity.Property(e => e.Eliminado).HasColumnName("ELIMINADO").IsRequired(false);
         });
 
         // EMPLEADOS
         modelBuilder.Entity<Empleado>(builder =>
         {
             builder.ToTable("EMPLEADOS");
-            builder.HasKey(e => e.CodigoEmpleado);
             builder.Property(e => e.CodigoEmpleado).HasColumnName("CODIGO_EMPLEADO");
             builder.Property(e => e.Nombre).HasColumnName("NOMBRE").HasMaxLength(80).IsRequired();
             builder.Property(e => e.Apellido).HasColumnName("APELLIDO").HasMaxLength(80).IsRequired();
@@ -178,12 +188,26 @@ public class ContextoBiblioteca: DbContext
             builder.Property(e => e.CodigoTanda).HasColumnName("CODIGO_TANDA").IsRequired();
             builder.Property(e => e.PorcentajeComision).HasColumnName("PORCENTAJE_COMISION");
             builder.Property(e => e.FechaIngreso).HasColumnName("FECHA_INGRESO");
+            builder.Property(e => e.NombreUsuario).HasColumnName("NOMBRE_USUARIO");
+            builder.Property(e => e.Contrasenia).HasColumnName("CONTRASENIA");
+            builder.Property(e => e.CodigoRol).HasColumnName("CODIGO_ROL");
             builder.Property(e => e.Eliminado).HasColumnName("ELIMINADO");
+            builder.HasKey(e => e.CodigoEmpleado).HasName("CODIGO_EMPLEADO");
 
             builder.HasOne(e => e.TandaLabor)
                 .WithMany(t => t.Empleados)
                 .HasForeignKey(e => e.CodigoTanda)
                 .HasConstraintName("FK_TANDA_EMPLEADO");
+
+            builder.HasOne(e => e.Rol)
+                .WithMany(r => r.Empleados)
+                .HasForeignKey(e => e.CodigoRol)
+                .HasConstraintName("FK_ROL_EMPLEADO");
+
+            builder.HasMany(e => e.Prestamos)
+                .WithOne(p => p.Empleado)
+                .HasForeignKey(p => p.CodigoEmpleado)
+                .HasConstraintName("FK_EMPLEADO_PRESTAMO");
         });
 
         // TANDA_LABOR
@@ -208,12 +232,12 @@ public class ContextoBiblioteca: DbContext
             builder.Property(tp => tp.Eliminado).HasColumnName("ELIMINADO");
         });
 
-        // USUARIOS
-        modelBuilder.Entity<Usuario>(builder =>
+        // ESTUDIANTES
+        modelBuilder.Entity<Estudiante>(builder =>
         {
-            builder.ToTable("USUARIOS");
-            builder.HasKey(u => u.CodigoUsuario);
-            builder.Property(u => u.CodigoUsuario).HasColumnName("CODIGO_USUARIO");
+            builder.ToTable("ESTUDIANTES");
+            builder.HasKey(u => u.CodigoEstudiante);
+            builder.Property(u => u.CodigoEstudiante).HasColumnName("CODIGO_ESTUDIANTE");
             builder.Property(u => u.Nombre).HasColumnName("NOMBRE").HasMaxLength(80).IsRequired();
             builder.Property(u => u.Apellido).HasColumnName("APELLIDO").HasMaxLength(80).IsRequired();
             builder.Property(u => u.Cedula).HasColumnName("CEDULA").HasMaxLength(11).IsRequired();
@@ -222,7 +246,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(u => u.Eliminado).HasColumnName("ELIMINADO");
 
             builder.HasOne(u => u.TipoPersona)
-                .WithMany(tp => tp.Usuarios)
+                .WithMany(tp => tp.Estudiantes)
                 .HasForeignKey(u => u.CodigoTipo)
                 .HasConstraintName("FK_TIPO_PERSONA_USUARIO");
         });

@@ -13,7 +13,7 @@ public class PrestamoServicio(ContextoBiblioteca context) : ServicioBase<Prestam
             //.Where(x => !(x.Eliminado ?? false))
             //.Include(p => p.Empleado)
             //.Include(p => p.Libro)
-            //.Include(p => p.Usuario)
+            //.Include(p => p.Estudiante)
             .ToListAsync();
     }
 
@@ -23,7 +23,7 @@ public class PrestamoServicio(ContextoBiblioteca context) : ServicioBase<Prestam
             .Where(x => !(x.Eliminado ?? false))
             .Include(p => p.Empleado)
             .Include(p => p.Libro)
-            .Include(p => p.Usuario)
+            .Include(p => p.Estudiante)
             .FirstOrDefaultAsync(p => p.CodigoPrestamo == id);
 
         // Cargar detalles adicionales si es necesario (por ejemplo, Editora e Idioma del libro)

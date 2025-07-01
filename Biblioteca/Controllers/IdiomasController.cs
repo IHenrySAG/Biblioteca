@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
+using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR))]
     public class IdiomasController(ContextoBiblioteca context, IdiomaServicio service) : Controller
     {
         // GET: Idiomas

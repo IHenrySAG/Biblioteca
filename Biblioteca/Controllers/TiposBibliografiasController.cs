@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
+using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
-    public class TiposBibliografiasController(ContextoBiblioteca context, TipoBibliografiaServicio   service) : Controller
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.BIBLIOTECARIO))]
+    public class TiposBibliografiasController(ContextoBiblioteca context, TipoBibliografiaServicio service) : Controller
     {
         // GET: TiposBibliografias
         public async Task<IActionResult> Index()
