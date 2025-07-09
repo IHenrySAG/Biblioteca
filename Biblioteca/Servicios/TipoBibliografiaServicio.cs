@@ -7,7 +7,7 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class TipoBibliografiaServicio(ContextoBiblioteca context) : ServicioBase<TipoBibliografia>(context)
 {
-    public override async Task<List<TipoBibliografia>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<TipoBibliografia>> ObtenerTodosAsync()
     {
         return await context.TiposBibliografias
             .Where(x => !(x.Eliminado ?? false))

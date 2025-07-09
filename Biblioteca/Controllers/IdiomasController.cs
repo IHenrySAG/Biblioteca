@@ -6,7 +6,7 @@ using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
-    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR))]
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
     public class IdiomasController(ContextoBiblioteca context, IdiomaServicio service) : Controller
     {
         // GET: Idiomas

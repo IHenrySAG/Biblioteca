@@ -7,10 +7,10 @@ using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
-    [Authorization(nameof(ERoles.ADMIN))]
-    public class UsuariosController(
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.BIBLIOTECARIO))]
+    public class EstudiantesController(
         ContextoBiblioteca context,
-        UsuarioServicio service,
+        EstudiantesServicio service,
         ServicioBase<TipoPersona> servicioTipoPersona
     ) : Controller
     {
@@ -40,7 +40,7 @@ namespace Biblioteca.Controllers
         {
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
 
-            if (tipos.Count == 0)
+            if (!tipos.Any())
                 return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "CreateUsuario" });
 
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");
@@ -60,7 +60,7 @@ namespace Biblioteca.Controllers
 
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
 
-            if (tipos.Count == 0)
+            if (!tipos.Any())
                 return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "CreateUsuario" });
 
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");
@@ -79,7 +79,7 @@ namespace Biblioteca.Controllers
 
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
 
-            if (tipos.Count == 0)
+            if (!tipos.Any())
                 return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "EditUsuario" });
 
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");
@@ -112,7 +112,7 @@ namespace Biblioteca.Controllers
 
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
 
-            if (tipos.Count == 0)
+            if (!tipos.Any())
                 return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "EditUsuario" });
 
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");

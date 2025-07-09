@@ -9,7 +9,7 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class EditoraServicio(ContextoBiblioteca context) : ServicioBase<Editora>(context)
 {
-    public override async Task<List<Editora>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Editora>> ObtenerTodosAsync()
     {
         return await context.Editoras
             .Where(x=>!(x.Eliminado??false))
@@ -26,6 +26,16 @@ public class EditoraServicio(ContextoBiblioteca context) : ServicioBase<Editora>
             .FirstOrDefaultAsync();
 
         return editora;
+    }
+
+    public async Task<IEnumerable<Editora>> BuscarEditorasAsync(string filtro)
+    {
+        return await context.Editoras
+            .Where(x => !(x.Eliminado ?? false))
+            .Where(string.IsNullOrEmpty(filtro) ?
+                e => true :
+                e => e.NombreEditora.Contains(filtro) || (e.Descripcion??"").Contains(filtro))
+            .ToListAsync();
     }
 
 }

@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
 using Biblioteca.Common;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Biblioteca.Controllers
 {
-    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR))]
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
     public class EditorasController(ContextoBiblioteca context, EditoraServicio service) : Controller
     {
         // GET: Editoras
@@ -107,6 +108,39 @@ namespace Biblioteca.Controllers
         {
             await service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> ObtenerEditorasJson(int cantidad)
+        {
+            var editoras = await service.ObtenerTodosAsync();
+            return Json(new { success = true, data = editoras.Take(cantidad) });
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> BuscarEditoraJson(string filtro)
+        {
+            var editoras= await service.BuscarEditorasAsync(filtro);
+            return Json(new { success = true, data = editoras });
+        }
+
+        // POST: Editoras/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> AgregarEditoraJson(string nombre, string descripcion)
+        {
+            if (nombre.Trim().IsNullOrEmpty())
+            {
+                return Json(new { success = false, message="El nombre es requerido" });
+            }
+
+            var editora = await service.AgregarAsync(new()
+            {
+                NombreEditora = nombre,
+                Descripcion = descripcion
+            });
+
+            return Json(new {success=true, editora});
         }
 
         private bool EditoraExists(int id)

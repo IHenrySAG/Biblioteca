@@ -7,7 +7,7 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class TandaLaborServicio(ContextoBiblioteca context) : ServicioBase<TandaLabor>(context)
 {
-    public override async Task<List<TandaLabor>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<TandaLabor>> ObtenerTodosAsync()
     {
         return await context.TandasLabor
             .Where(x => !(x.Eliminado ?? false))

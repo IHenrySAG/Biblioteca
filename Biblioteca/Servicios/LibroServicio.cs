@@ -9,12 +9,28 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(context)
 {
-    public override async Task<List<Libro>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Libro>> ObtenerTodosAsync()
     {
         return await context.Libros
             .Where(x=>!(x.Eliminado??false))
             .Include(l => l.Idioma)
             .Include(l => l.Editora)
+            .ToListAsync();
+    }
+
+    public async Task<List<Libro>> ObtenerConFiltroAsync(string filtro)
+    {
+        return await context.Libros
+            .Where(x => !(x.Eliminado ?? false))
+            .Include(l => l.Idioma)
+            .Include(l => l.Editora)
+            .Where(string.IsNullOrEmpty(filtro) ?
+                l => true :
+                l => l.Titulo.Contains(filtro) ||
+                      l.SignaturaTopografica.Contains(filtro) ||
+                      l.Isbn.Contains(filtro) ||
+                      l.Editora.NombreEditora.Contains(filtro) ||
+                      l.Idioma.NombreIdioma.Contains(filtro))
             .ToListAsync();
     }
 

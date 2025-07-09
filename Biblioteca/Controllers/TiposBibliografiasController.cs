@@ -6,7 +6,7 @@ using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
-    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.BIBLIOTECARIO))]
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
     public class TiposBibliografiasController(ContextoBiblioteca context, TipoBibliografiaServicio service) : Controller
     {
         // GET: TiposBibliografias

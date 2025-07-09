@@ -134,6 +134,11 @@ create table TANDA_LABOR(
 );
 go
 
+create table ROLES(
+	CODIGO_ROL int not null primary key identity(1,1),
+	NOMBRE_ROL varchar(30) not null,
+	ELIMINADO bit null
+);
 
 create table EMPLEADOS(
 	CODIGO_EMPLEADO int not null primary key identity(1,1),
@@ -150,6 +155,11 @@ go
 alter table EMPLEADOS
 add constraint FK_TANDA_EMPLEADO
 foreign key (CODIGO_TANDA) references TANDA_LABOR(CODIGO_TANDA)
+go
+
+alter table EMPLEADOS
+add constraint FK_ROL_EMPLEADO
+foreign key (CODIGO_ROL) references ROLES(CODIGO_ROL)
 go
 
 create table PRESTAMO(

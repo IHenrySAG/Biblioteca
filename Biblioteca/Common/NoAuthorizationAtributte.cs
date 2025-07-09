@@ -28,13 +28,13 @@ namespace Biblioteca.Common
                 switch (rol)
                 {
                     case nameof(ERoles.ADMIN): // Administrador
-                        http.Response.Redirect("/Empleados/Index");
+                        http.Response.Redirect("/Empleados");
                         break;
                     case nameof(ERoles.BIBLIOTECARIO): // Bibliotecario
-                        http.Response.Redirect("/Empleados/Index");
+                        http.Response.Redirect("/Prestamos");
                         break;
                     case nameof(ERoles.CATALOGADOR): // Catalogador
-                        http.Response.Redirect("/Empleados/Index");
+                        http.Response.Redirect("/Libros");
                         break;
                     default:
                         http.Session.Clear();

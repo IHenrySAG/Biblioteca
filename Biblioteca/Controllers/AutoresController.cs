@@ -7,7 +7,7 @@ using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
-    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR))]
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
     public class AutoresController(
         ContextoBiblioteca context,
         AutorServicio service,
@@ -44,7 +44,7 @@ namespace Biblioteca.Controllers
         {
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
+            if (!idiomas.Any())
                 return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "CreateAutor" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
@@ -64,7 +64,7 @@ namespace Biblioteca.Controllers
 
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
+            if (!idiomas.Any())
                 return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "CreateAutor" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
@@ -83,7 +83,7 @@ namespace Biblioteca.Controllers
 
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
+            if (!idiomas.Any())
                 return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "EditAutor" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
@@ -116,7 +116,7 @@ namespace Biblioteca.Controllers
 
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
+            if (!idiomas.Any())
                 return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "EditAutor" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");

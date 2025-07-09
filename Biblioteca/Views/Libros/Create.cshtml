@@ -6,6 +6,20 @@
 
 <h3>Nuevo Libro</h3>
 <hr />
+@* @if (ViewBag.ErrorIdiomas != null || ViewBag.ErrorEditoras != null || ViewBag.ErrorAutores != null || ViewBag.ErrorBibliografias != null) *@
+@* { *@
+@*     <div class="alert alert-danger"> *@
+@*         @ViewBag.ErrorIdiomas <br /> *@
+@*         @ViewBag.ErrorEditoras<br /> *@
+@*         @ViewBag.ErrorAutores<br /> *@
+@*         @ViewBag.ErrorBibliografias<br /> *@
+@*     </div> *@
+@*     <div class="form-group d-flex mt-3"> *@
+@*         <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a> *@
+@*     </div> *@
+
+@* }else{ *@
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
@@ -43,6 +57,10 @@
                 <label asp-for="CodigoIdioma" class="control-label"></label>
                 <select asp-for="CodigoIdioma" class="form-control" asp-items="ViewBag.Idiomas"></select>
             </div>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalBuscarEditora">
+                Agregar Autor
+            </button>
             <div class="form-group d-flex mt-3">
                 <input type="submit" value="Guardar" class="btn btn-primary" />
                 <a class="btn btn-danger ms-2" asp-action="Index">Volver a la lista</a>
@@ -50,7 +68,102 @@
         </form>
     </div>
 </div>
+@* } *@
+
+<!-- Modal -->
+<div class="modal fade" id="modalBuscarEditora" tabindex="-1" aria-labelledby="modalEditoraLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalEditoraLabel">Seleccionar Editora</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex">
+                    <input name="filtroEditora" class="form-control me-2" type="search" placeholder="Buscar Editora" aria-label="Search" />
+                    <button class="btn btn-outline-success" id="btnBuscarEditora" type="button">Buscar</button>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Nombre</th>
+                            <th>Descripcion</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-Editoras">
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNuevaEditora" tabindex="-1" aria-labelledby="modalEditoraLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalEditoraLabel">Seleccionar Editora</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="d-flex" action="#" id="frmBuscarEditora">
+                    <input name="filtroEditora" class="form-control me-2" type="search" placeholder="Buscar Editora" aria-label="Search" />
+                    <button class="btn btn-outline-success" id="btnBuscarEditora" type="button">Buscar</button>
+                </form>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Nombre</th>
+                            <th>Descripcion</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-Editoras">
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function(){
+            $('#btnBuscarEditora').click(function(){
+                var filtro = $('input[name="filtroEditora"]').val();
+                $.get('/Editoras/BuscarEditoraJson', {filtro:filtro})
+                    .done(function (result) {
+                        if (result.success) {
+                            $('#tbody-Editoras').html(
+                                `<tr>
+                                    <td>
+                                        ${result.data.CodigoEditora}
+                                    </td>
+                                    <td>
+                                        ${result.data.NombreEditora}
+                                    </td>
+                                    <td>
+                                        ${result.data.Descripcion}
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary text-white">Seleccionar</a>
+                                    </td>
+                                </tr>`
+                            );
+                        } else {
+                        }
+                    })
+                    .fail(function (xhr, status, error) {
+                        console.error("Error al buscar:", error);
+                    });
+            })
+        })
+    </script>
 }

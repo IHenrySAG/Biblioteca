@@ -10,7 +10,7 @@ namespace Biblioteca.Servicios;
 public class ServicioBase<T>(ContextoBiblioteca context) 
     where T : EntidadBase
 {
-    public virtual async Task<List<T>> ObtenerTodosAsync()
+    public virtual async Task<IEnumerable<T>> ObtenerTodosAsync()
     {
         return await context.Set<T>()
             .Where(x=>!(x.Eliminado??false))

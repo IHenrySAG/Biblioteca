@@ -46,7 +46,7 @@ builder.Services.AddTransient<LibroServicio>();
 builder.Services.AddTransient<PrestamoServicio>();
 builder.Services.AddTransient<TandaLaborServicio>();
 builder.Services.AddTransient<TipoBibliografiaServicio>();
-builder.Services.AddTransient<UsuarioServicio>();
+builder.Services.AddTransient<EstudiantesServicio>();
 #endregion
 
 

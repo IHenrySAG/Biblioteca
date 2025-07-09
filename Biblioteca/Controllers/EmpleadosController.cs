@@ -5,6 +5,7 @@ using Biblioteca.Model;
 using Biblioteca.Servicios;
 using Biblioteca.Common;
 using Biblioteca.Views.Empleados;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Biblioteca.Controllers
 {
@@ -35,13 +36,15 @@ namespace Biblioteca.Controllers
             if (rolUsuarioActual!=nameof(ERoles.ADMIN) && (idUsuarioActual == null || idUsuarioActual != id))
             {
                 // Solo el usuario actual puede ver sus propios detalles
-                return RedirectToAction(nameof(HomeController.Error401), "Home");
+                return RedirectToAction(nameof(HomeController.Error403), "Home");
             }
 
             var empleado = await service.ObtenerPorIdAsync(id.Value);
 
             if (empleado == null)
                 return NotFound();
+
+            ViewBag.EditarDatos = rolUsuarioActual == nameof(ERoles.ADMIN);
 
             return View(empleado);
         }
@@ -51,7 +54,7 @@ namespace Biblioteca.Controllers
         {
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
-            if (tandas.Count == 0)
+            if (!tandas.Any())
                 return RedirectToAction("Create", "TandasLabor", new { RedirectedFrom = "CreateEmpleado" });
 
             var roles = await context.Roles
@@ -111,7 +114,7 @@ namespace Biblioteca.Controllers
 
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
-            if (tandas.Count == 0)
+            if (!tandas.Any())
                 return RedirectToAction("Create", "TandasLabor", new { RedirectedFrom = "EditEmpleado" });
 
             ViewData["TandasLabor"] = new SelectList(tandas, "CodigoTanda", "NombreTanda");
@@ -144,7 +147,7 @@ namespace Biblioteca.Controllers
 
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
-            if (tandas.Count == 0)
+            if (!tandas.Any())
                 return RedirectToAction("Create", "TandasLabor", new { RedirectedFrom = "EditEmpleado" });
 
             ViewData["TandasLabor"] = new SelectList(tandas, "CodigoTanda", "NombreTanda");
@@ -197,13 +200,14 @@ namespace Biblioteca.Controllers
             });
         }
 
+        [Authorization(nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CambiarContrasenia(CambiarContrasenia model)
         {
             var empleado=await service.ObtenerPorIdAsync(model.CodigoEmpleado);
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || (model.ContraseniaActual ?? "").Trim().IsNullOrEmpty())
             {
                 ModelState.AddModelError("", "Por favor, complete todos los campos correctamente.");
                 return View(model);
@@ -214,7 +218,7 @@ namespace Biblioteca.Controllers
                 ModelState.AddModelError("", "Empleado no encontrado.");
                 return View(model);
             }
-            
+
             if (model.NuevaContrasenia != model.ConfirmarContrasenia)
             {
                 ModelState.AddModelError("ConfirmarContrasenia", "Las contraseñas no coinciden.");
@@ -227,7 +231,7 @@ namespace Biblioteca.Controllers
                 return View(model);
             }
 
-            if (Encryption.GetMD5(model.ContraseniaActual) != empleado.Contrasenia)
+            if (Encryption.GetMD5(model.ContraseniaActual ?? "") != empleado.Contrasenia)
             {
                 ModelState.AddModelError("ContraseniaActual", "La contraseña actual es incorrecta.");
                 return View(model);
@@ -254,9 +258,61 @@ namespace Biblioteca.Controllers
             string rolEmpleado = HttpContext.Session.GetString("Rol");
             int codigoEmpleado = HttpContext.Session.GetInt32("CodigoEmpleado") ?? 0;
 
-            return rolEmpleado == nameof(ERoles.ADMIN)
-                ? RedirectToAction(nameof(Index))
-                : RedirectToAction(nameof(Detalles), codigoEmpleado);
+            return RedirectToAction(nameof(Detalles), codigoEmpleado);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarContraseniaAdmin(CambiarContrasenia model)
+        {
+            var empleado = await service.ObtenerPorIdAsync(model.CodigoEmpleado);
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Por favor, complete todos los campos correctamente.");
+                return View(model);
+            }
+
+            if (empleado == null)
+            {
+                ModelState.AddModelError("", "Empleado no encontrado.");
+                return View(model);
+            }
+
+            if (model.NuevaContrasenia != model.ConfirmarContrasenia)
+            {
+                ModelState.AddModelError("ConfirmarContrasenia", "Las contraseñas no coinciden.");
+                return View(model);
+            }
+
+            if (model.NuevaContrasenia.Length < 8)
+            {
+                ModelState.AddModelError("NuevaContrasenia", "La nueva contraseña debe tener al menos 8 caracteres.");
+                return View(model);
+            }
+
+            if (Encryption.GetMD5(model.NuevaContrasenia) == empleado.Contrasenia)
+            {
+                ModelState.AddModelError("NuevaContrasenia", "La nueva contraseña no puede ser la misma que la actual.");
+                return View(model);
+            }
+
+            empleado.Contrasenia = Encryption.GetMD5(model.NuevaContrasenia);
+
+            try
+            {
+                await service.ActualizarAsync(empleado);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Error al cambiar la contraseña: {ex.Message}");
+                return View(model);
+            }
+
+            string rolEmpleado = HttpContext.Session.GetString("Rol");
+            int codigoEmpleado = HttpContext.Session.GetInt32("CodigoEmpleado") ?? 0;
+
+            return RedirectToAction(nameof(Index));
         }
 
         private bool EmpleadoExists(int id)

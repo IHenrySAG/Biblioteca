@@ -4,16 +4,27 @@
     ViewData["Title"] = "Nuevo Préstamo";
 }
 
+
+
 <h3>Nuevo Préstamo</h3>
 <hr />
+
+@if (ViewBag.ErrorLibros != null || ViewBag.ErrorUsuarios != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorLibros <br />
+        @ViewBag.ErrorEstudiantes
+    </div>
+    <div class="form-group d-flex mt-3">
+        <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
+    </div>
+
+}else{
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group mb-2">
-                <label asp-for="CodigoEmpleado" class="control-label"></label>
-                <select asp-for="CodigoEmpleado" class="form-control" asp-items="ViewBag.Empleados"></select>
-            </div>
             <div class="form-group mb-2">
                 <label asp-for="CodigoLibro" class="control-label"></label>
                 <select asp-for="CodigoLibro" class="form-control" asp-items="ViewBag.Libros"></select>
@@ -39,6 +50,7 @@
         </form>
     </div>
 </div>
+}
 
 @section Scripts {
     @{

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
 using Biblioteca.Common;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Biblioteca.Controllers
 {
@@ -13,7 +14,7 @@ namespace Biblioteca.Controllers
         PrestamoServicio service,
         ServicioBase<Empleado> servicioEmpleado,
         ServicioBase<Libro> servicioLibro,
-        ServicioBase<Estudiante> servicioUsuario
+        ServicioBase<Estudiante> servicioEstudiantes
     ) : Controller
     {
         // GET: Prestamos
@@ -40,20 +41,17 @@ namespace Biblioteca.Controllers
         // GET: Prestamos/Create
         public async Task<IActionResult> Create()
         {
-            var empleados = await servicioEmpleado.ObtenerTodosAsync();
             var libros = await servicioLibro.ObtenerTodosAsync();
-            var usuarios = await servicioUsuario.ObtenerTodosAsync();
+            var estudiantes = await servicioEstudiantes.ObtenerTodosAsync();
 
-            if (empleados.Count == 0)
-                return RedirectToAction("Create", "Empleados", new { RedirectedFrom = "CreatePrestamo" });
-            if (libros.Count == 0)
-                return RedirectToAction("Create", "Libros", new { RedirectedFrom = "CreatePrestamo" });
-            if (usuarios.Count == 0)
-                return RedirectToAction("Create", "Usuarios", new { RedirectedFrom = "CreatePrestamo" });
+            if (!libros.Any())
+                ViewBag.ErrorLibros = "No hay libros registrados. Por favor, contacte con un catalogador para registrar al menos un libro antes de crear un préstamo.";
 
-            ViewData["Empleados"] = new SelectList(empleados, "CodigoEmpleado", "Nombre");
+            if (!estudiantes.Any())
+                ViewBag.ErrorEstudiantes = "No hay estudiantes registrados. Por favor, registre al menos un estudiante antes de crear un préstamo.";
+
             ViewData["Libros"] = new SelectList(libros, "CodigoLibro", "Titulo");
-            ViewData["Usuarios"] = new SelectList(usuarios, "CodigoUsuario", "Nombre");
+            ViewData["Estudiantes"] = new SelectList(estudiantes, "CodigoUsuario", "Nombre");
             return View();
         }
 
@@ -70,13 +68,13 @@ namespace Biblioteca.Controllers
 
             var empleados = await servicioEmpleado.ObtenerTodosAsync();
             var libros = await servicioLibro.ObtenerTodosAsync();
-            var usuarios = await servicioUsuario.ObtenerTodosAsync();
+            var usuarios = await servicioEstudiantes.ObtenerTodosAsync();
 
-            if (empleados.Count == 0)
+            if (!empleados.Any())
                 return RedirectToAction("Create", "Empleados", new { RedirectedFrom = "CreatePrestamo" });
-            if (libros.Count == 0)
+            if (!libros.Any())
                 return RedirectToAction("Create", "Libros", new { RedirectedFrom = "CreatePrestamo" });
-            if (usuarios.Count == 0)
+            if (!usuarios.Any())
                 return RedirectToAction("Create", "Usuarios", new { RedirectedFrom = "CreatePrestamo" });
 
             ViewData["Empleados"] = new SelectList(empleados, "CodigoEmpleado", "Nombre");
@@ -97,13 +95,13 @@ namespace Biblioteca.Controllers
 
             var empleados = await servicioEmpleado.ObtenerTodosAsync();
             var libros = await servicioLibro.ObtenerTodosAsync();
-            var usuarios = await servicioUsuario.ObtenerTodosAsync();
+            var usuarios = await servicioEstudiantes.ObtenerTodosAsync();
 
-            if (empleados.Count == 0)
+            if (!empleados.Any())
                 return RedirectToAction("Create", "Empleados", new { RedirectedFrom = "EditPrestamo" });
-            if (libros.Count == 0)
+            if (!libros.Any())
                 return RedirectToAction("Create", "Libros", new { RedirectedFrom = "EditPrestamo" });
-            if (usuarios.Count == 0)
+            if (!usuarios.Any())
                 return RedirectToAction("Create", "Usuarios", new { RedirectedFrom = "EditPrestamo" });
 
             ViewData["Empleados"] = new SelectList(empleados, "CodigoEmpleado", "Nombre");
@@ -138,13 +136,13 @@ namespace Biblioteca.Controllers
 
             var empleados = await servicioEmpleado.ObtenerTodosAsync();
             var libros = await servicioLibro.ObtenerTodosAsync();
-            var usuarios = await servicioUsuario.ObtenerTodosAsync();
+            var usuarios = await servicioEstudiantes.ObtenerTodosAsync();
 
-            if (empleados.Count == 0)
+            if (!empleados.Any())
                 return RedirectToAction("Create", "Empleados", new { RedirectedFrom = "EditPrestamo" });
-            if (libros.Count == 0)
+            if (!libros.Any())
                 return RedirectToAction("Create", "Libros", new { RedirectedFrom = "EditPrestamo" });
-            if (usuarios.Count == 0)
+            if (!usuarios.Any())
                 return RedirectToAction("Create", "Usuarios", new { RedirectedFrom = "EditPrestamo" });
 
             ViewData["Empleados"] = new SelectList(empleados, "CodigoEmpleado", "Nombre");

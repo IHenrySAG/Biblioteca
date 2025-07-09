@@ -35,26 +35,25 @@ namespace Biblioteca.Common
             {
                 http.Session.Clear();
                 http.Response.Redirect("/");
-            }
-
-            if (!rolesEsperados.Contains(rolUsuario))
+            }else if (!rolesEsperados.Contains(rolUsuario))
             {
-                switch (rolUsuario)
-                {
-                    case nameof(ERoles.ADMIN): // Administrador
-                        http.Response.Redirect("/Empleados/Index");
-                        break;
-                    case nameof(ERoles.BIBLIOTECARIO): // Bibliotecario
-                        http.Response.Redirect("/Prestamos/Index");
-                        break;
-                    case nameof(ERoles.CATALOGADOR): // Catalogador
-                        http.Response.Redirect("/Libros/Index");
-                        break;
-                    default:
-                        http.Session.Clear();
-                        http.Response.Redirect("/");
-                        break;
-                }
+                http.Response.Redirect("/Error403");
+                //switch (rolUsuario)
+                //{
+                //    case nameof(ERoles.ADMIN): // Administrador
+                //        http.Response.Redirect("/Empleados/Index");
+                //        break;
+                //    case nameof(ERoles.BIBLIOTECARIO): // Bibliotecario
+                //        http.Response.Redirect("/Prestamos/Index");
+                //        break;
+                //    case nameof(ERoles.CATALOGADOR): // Catalogador
+                //        http.Response.Redirect("/Libros/Index");
+                //        break;
+                //    default:
+                //        http.Session.Clear();
+                //        http.Response.Redirect("/");
+                //        break;
+                //}
             }
 
             await Task.CompletedTask;

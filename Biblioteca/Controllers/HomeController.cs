@@ -71,6 +71,13 @@ public class HomeController(EmpleadoServicio _servicio) : Controller
         return View();
     }
 
+    [HttpGet("/Error403")]
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
+    public IActionResult Error403()
+    {
+        return View();
+    }
+
 
     [HttpGet("/ErrorTest")]
     public IActionResult Error()

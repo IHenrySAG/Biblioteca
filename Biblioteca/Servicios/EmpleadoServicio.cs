@@ -23,7 +23,7 @@ public class EmpleadoServicio(ContextoBiblioteca context) : ServicioBase<Emplead
         return empleado.Contrasenia == Encryption.GetMD5(contrasenia);
     }
 
-    public override async Task<List<Empleado>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Empleado>> ObtenerTodosAsync()
     {
         return await context.Empleados
             .Where(x => !(x.Eliminado ?? false))

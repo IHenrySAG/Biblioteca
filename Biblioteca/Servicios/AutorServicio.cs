@@ -7,7 +7,7 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class AutorServicio(ContextoBiblioteca context) : ServicioBase<Autor>(context)
 {
-    public override async Task<List<Autor>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Autor>> ObtenerTodosAsync()
     {
         return await context.Autores
             .Where(x => !(x.Eliminado ?? false))

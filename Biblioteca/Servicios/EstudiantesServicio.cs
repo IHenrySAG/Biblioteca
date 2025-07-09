@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Biblioteca.Model;
 
 namespace Biblioteca.Servicios;
-public class UsuarioServicio(ContextoBiblioteca context) : ServicioBase<Estudiante>(context)
+public class EstudiantesServicio(ContextoBiblioteca context) : ServicioBase<Estudiante>(context)
 {
-    public override async Task<List<Estudiante>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Estudiante>> ObtenerTodosAsync()
     {
         return await context.Estudiantes
             .Where(x => !(x.Eliminado ?? false))

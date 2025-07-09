@@ -12,13 +12,29 @@ using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
-    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR))]
-    public class LibrosController(ContextoBiblioteca context, LibroServicio service, ServicioBase<Idioma> servicioIdioma, ServicioBase<Editora> servicioEditoras) : Controller
+    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
+    public class LibrosController(ContextoBiblioteca context, LibroServicio service, ServicioBase<Idioma> servicioIdioma, ServicioBase<Editora> servicioEditoras, ServicioBase<Autor> servicioAutores, ServicioBase<TipoBibliografia> servicioBibliografia) : Controller
     {
         // GET: Libros
         public async Task<IActionResult> Index()
         {
             var libros = await service.ObtenerTodosAsync();
+
+            ViewBag.EditarLibros = new string[] { nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR) }
+                .Contains(HttpContext.Session.GetString("Rol"));
+
+            return View(libros);
+        }
+
+        // GET: Libros/Buscar
+        public async Task<IActionResult> Buscar(string filtro)
+        {
+            var libros = await service.ObtenerConFiltroAsync(filtro);
+
+            ViewBag.EditarLibros = new string[] { nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR) }
+                .Contains(HttpContext.Session.GetString("Rol"));
+            ViewBag.Filtro = filtro;
+
             return View(libros);
         }
 
@@ -45,16 +61,28 @@ namespace Biblioteca.Controllers
         {
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
-                return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
+            if (!idiomas.Any())
+                ViewBag.ErrorIdiomas = "No hay idiomas registrados. Por favor, registre al menos un idioma antes de crear un libro.";
 
             var editoras = await servicioEditoras.ObtenerTodosAsync();
 
-            if (editoras.Count == 0)
-                return RedirectToAction("Index", "Editoras", new { RedirectedFrom = "CreateBook" });
+            if (!editoras.Any())
+                ViewBag.ErrorEditoras = "No hay editoras registradas. Por favor, registre al menos una editora antes de crear un libro.";
+
+            var autores=await servicioAutores.ObtenerTodosAsync();
+
+            if (!autores.Any())
+                ViewBag.ErrorAutores = "No hay autores registrados. Por favor, registre al menos un autor antes de crear un libro.";
+
+            var bibliografias = await servicioBibliografia.ObtenerTodosAsync();
+
+            if (!bibliografias.Any())
+                ViewBag.ErrorBibliografias = "No hay bibliografías registradas. Por favor, registre al menos una bibliografía antes de crear un libro.";
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             ViewData["Editoras"] = new SelectList(editoras, "CodigoEditora", "NombreEditora");
+            ViewData["Autores"] = new SelectList(autores, "CodigoAutor", "NombreAutor");
+            ViewData["Bibliografias"] = new SelectList(bibliografias, "CodigoBibliografia", "NombreBibliografia");
             return View();
         }
 
@@ -73,12 +101,12 @@ namespace Biblioteca.Controllers
 
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
+            if (!idiomas.Any())
                 return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
 
             var editoras = await servicioEditoras.ObtenerTodosAsync();
 
-            if (editoras.Count == 0)
+            if (!editoras.Any())
                 return RedirectToAction("Index", "Editoras", new { RedirectedFrom = "CreateBook" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
@@ -102,12 +130,12 @@ namespace Biblioteca.Controllers
 
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
+            if (!idiomas.Any())
                 return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
 
             var editoras = await servicioEditoras.ObtenerTodosAsync();
 
-            if (editoras.Count == 0)
+            if (!editoras.Any())
                 return RedirectToAction("Index", "Editoras", new { RedirectedFrom = "CreateBook" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
@@ -149,12 +177,12 @@ namespace Biblioteca.Controllers
 
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
-            if (idiomas.Count == 0)
+            if (!idiomas.Any())
                 return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
 
             var editoras = await servicioEditoras.ObtenerTodosAsync();
 
-            if (editoras.Count == 0)
+            if (!editoras.Any())
                 return RedirectToAction("Index", "Editoras", new { RedirectedFrom = "CreateBook" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");

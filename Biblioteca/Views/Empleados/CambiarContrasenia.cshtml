@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Cambiar Contraseña";
+    string action = ViewBag.IsAdmin ? "CambiarContraseniaAdmin" : "CambiarContrasenia";
 }
 
 <h4>Editar Empleado</h4>
@@ -9,14 +10,18 @@
 <div class="row">
     <div class="col-md-4">
         <p>Cambiar contrasenia de @ViewBag.NombreUsuario</p>
-        <form asp-action="Edit">
+        <form asp-action="@action">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input asp-for="CodigoEmpleado" type="hidden" />
-            <div class="form-group mb-3">
-                <label asp-for="ContraseniaActual" class="control-label"></label>
+
+            @if (!ViewBag.IsAdmin)
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="ContraseniaActual" class="control-label"></label>
                 <input asp-for="ContraseniaActual" class="form-control" type="password" />
                 <span asp-validation-for="ContraseniaActual" class="text-danger"></span>
             </div>
+            }
             <div class="form-group mb-3">
                 <label asp-for="NuevaContrasenia" class="control-label"></label>
                 <input asp-for="NuevaContrasenia" class="form-control" type="password" />
