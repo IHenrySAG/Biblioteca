@@ -32,4 +32,15 @@ public class AutorServicio(ContextoBiblioteca context) : ServicioBase<Autor>(con
 
         return autor;
     }
+
+    public async Task<IEnumerable<Autor>> BuscarAutorAsync(string filtro)
+    {
+        return await context.Autores
+            .Where(x => !(x.Eliminado ?? false))
+            .Include(x=>x.Idioma)
+            .Where(string.IsNullOrEmpty(filtro) ?
+                e => true :
+                e => e.NombreAutor.Contains(filtro) || (e.PaisOrigen ?? "").Contains(filtro) || ((e.Idioma??new()).NombreIdioma ?? "").Contains(filtro))
+            .ToListAsync();
+    }
 }

@@ -58,4 +58,13 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
         return libro;
     }
 
+    public override async Task<Libro> AgregarAsync(Libro libro)
+    {
+        await context.Database.BeginTransactionAsync();
+        await base.AgregarAsync(libro);
+
+        await context.Database.CommitTransactionAsync();
+        return libro;
+    }
+
 }

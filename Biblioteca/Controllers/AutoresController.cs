@@ -144,6 +144,12 @@ namespace Biblioteca.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> BuscarAutorJson(string filtro)
+        {
+            return Json(await service.BuscarAutorAsync(filtro));
+        }
+
         private bool AutorExists(int id)
         {
             return context.Autores.Any(a => a.CodigoAutor == id);

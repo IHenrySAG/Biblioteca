@@ -80,9 +80,6 @@ namespace Biblioteca.Controllers
                 ViewBag.ErrorBibliografias = "No hay bibliografías registradas. Por favor, registre al menos una bibliografía antes de crear un libro.";
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
-            ViewData["Editoras"] = new SelectList(editoras, "CodigoEditora", "NombreEditora");
-            ViewData["Autores"] = new SelectList(autores, "CodigoAutor", "NombreAutor");
-            ViewData["Bibliografias"] = new SelectList(bibliografias, "CodigoBibliografia", "NombreBibliografia");
             return View();
         }
 
@@ -91,27 +88,41 @@ namespace Biblioteca.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoLibro,Titulo,SignaturaTopografica,Isbn,CodigoEditora,AnioPublicacion,Ciencia,CodigoIdioma")] Libro libro)
+        public async Task<IActionResult> Create([Bind("CodigoLibro,Titulo,SignaturaTopografica,Isbn,CodigoEditora,AnioPublicacion,Ciencia,CodigoIdioma")] Libro libro, int[] autores, List<TipoBibliografia> bibliografias)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await service.AgregarAsync(libro);
-                return RedirectToAction(nameof(Index));
+                var idiomas = await servicioIdioma.ObtenerTodosAsync();
+
+                if (!idiomas.Any())
+                    return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
+
+                ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
+                return View(libro);
             }
 
-            var idiomas = await servicioIdioma.ObtenerTodosAsync();
+            libro.LibrosAutores ??= [];
 
-            if (!idiomas.Any())
-                return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
+            foreach(int codigoAutor in autores)
+            {
+                libro.LibrosAutores.Add(new()
+                {
+                    CodigoAutor = codigoAutor
+                });
+            }
 
-            var editoras = await servicioEditoras.ObtenerTodosAsync();
+            libro.LibrosBibliografias ??= [];
 
-            if (!editoras.Any())
-                return RedirectToAction("Index", "Editoras", new { RedirectedFrom = "CreateBook" });
+            foreach(var biblio in bibliografias)
+            {
+                libro.LibrosBibliografias.Add(new()
+                {
+                    TipoBibliografia=biblio
+                });
+            }
 
-            ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
-            ViewData["Editoras"] = new SelectList(editoras, "CodigoEditora", "NombreEditora");
-            return View(libro);
+            await service.AgregarAsync(libro);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Libros/Edit/5

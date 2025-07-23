@@ -3,6 +3,7 @@ using Biblioteca.Common;
 using Biblioteca.Servicios;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.AddService<NoAuthorizationFilter>();
     options.Filters.AddService<AuthorizationFilter>();
-});
+}).AddJsonOptions(x =>x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles); 
 
 builder.Services.AddSession(options =>
 {

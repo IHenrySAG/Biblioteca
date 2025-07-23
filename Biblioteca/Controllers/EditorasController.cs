@@ -121,17 +121,17 @@ namespace Biblioteca.Controllers
         public async Task<JsonResult> BuscarEditoraJson(string filtro)
         {
             var editoras= await service.BuscarEditorasAsync(filtro);
-            return Json(new { success = true, data = editoras });
+            return Json(editoras);
         }
 
         // POST: Editoras/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> AgregarEditoraJson(string nombre, string descripcion)
+        public async Task<IActionResult> AgregarEditoraJson(string nombre, string descripcion)
         {
             if (nombre.Trim().IsNullOrEmpty())
             {
-                return Json(new { success = false, message="El nombre es requerido" });
+                return BadRequest("El nombre es requerido");
             }
 
             var editora = await service.AgregarAsync(new()
@@ -140,7 +140,7 @@ namespace Biblioteca.Controllers
                 Descripcion = descripcion
             });
 
-            return Json(new {success=true, editora});
+            return Json(editora);
         }
 
         private bool EditoraExists(int id)
