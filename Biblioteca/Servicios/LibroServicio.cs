@@ -41,7 +41,9 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
             .Include(l => l.Idioma)
             .Include(l => l.Editora)
             .Include(l => l.LibrosBibliografias)
+            .ThenInclude(lb=>lb.TipoBibliografia)
             .Include(l => l.LibrosAutores)
+            //.ThenInclude(la=>la.Autor)
             .Where(l => l.CodigoLibro == id)
             .FirstOrDefaultAsync();
 
@@ -67,4 +69,29 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
         return libro;
     }
 
+    public override async Task<Libro> ActualizarAsync(Libro entidad)
+    {
+        var libro = await ObtenerPorIdAsync(entidad.CodigoLibro);
+
+        libro.Titulo = entidad.Titulo;
+        libro.SignaturaTopografica = entidad.SignaturaTopografica;
+        libro.Isbn = entidad.Isbn;
+        libro.CodigoEditora = entidad.CodigoEditora;
+        libro.AnioPublicacion = entidad.AnioPublicacion;
+        libro.Ciencia = entidad.Ciencia;
+        libro.CodigoIdioma = entidad.CodigoIdioma;
+
+        var bibliografiasAEliminar = libro.LibrosBibliografias.Select(x => x.TipoBibliografia);
+
+        context.TiposBibliografias.RemoveRange(bibliografiasAEliminar);
+        context.LibrosBibliografias.RemoveRange(libro.LibrosBibliografias);
+        context.LibrosAutores.RemoveRange(libro.LibrosAutores);
+
+        libro.LibrosBibliografias = entidad.LibrosBibliografias;
+        libro.LibrosAutores = entidad.LibrosAutores;
+
+        await context.SaveChangesAsync();
+
+        return libro;
+    }
 }

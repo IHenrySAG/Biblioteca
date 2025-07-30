@@ -1,7 +1,7 @@
 ﻿
 
-let editora
-let listaEditoras
+let libro
+let listaLibro
 
 let autoresSeleccionados=[]
 let listaAutores
@@ -11,21 +11,16 @@ let listaBibliografias = []
 const formBuscarAutor = document.getElementById('frmBuscarAutor')
 formBuscarAutor.addEventListener('submit', bucarAutorEvent)
 
-const formCrearLibro = document.getElementById('formCrearLibro')
-formCrearLibro.addEventListener('submit', function(evt) {
+const formCrearPrestamo = document.getElementById('formCrearPrestamo')
+formCrearPrestamo.addEventListener('submit', function(evt) {
     evt.preventDefault()
 
-    if (!editora) {
-        alert('Debe seleccionar una editorial')
+    if (!libro) {
+        alert('Debe seleccionar un Libro')
         return
     }
 
-    if (autoresSeleccionados.length === 0) {
-        alert('Debe agregar al menos un autor')
-        return
-    }
-
-    formCrearLibro.submit()
+    formCrearPrestamo.submit()
 })
 
 $('#frmBuscarEditora').submit(function (evt) {
@@ -37,9 +32,9 @@ $('#frmBuscarEditora').submit(function (evt) {
 async function buscarEditoraClick() {
     var filtro = $('input[name="filtroEditora"]').val()
 
-    listaEditoras = await buscarEditorial(filtro)
+    listaLibro = await buscarEditorial(filtro)
     $('#tbody-Editoras').html(
-        listaEditoras.map(editora =>
+        listaLibro.map(editora =>
             `<tr>
             <td>
                 ${editora.codigoEditora}
@@ -58,7 +53,7 @@ async function buscarEditoraClick() {
 }
 
 function seleccionarEditorial(codigoEditorial){
-    editora = listaEditoras.find(x => x.codigoEditora === codigoEditorial)
+    libro = listaLibro.find(x => x.codigoEditora === codigoEditorial)
 
     $('#editorial-container').html(
         `
@@ -66,8 +61,8 @@ function seleccionarEditorial(codigoEditorial){
                     <div class="col-10">
                         <div class="form-group mb-2">
                             <label class="control-label">Editorial</label>
-                            <input type="hidden" name="CodigoEditora" value="${editora.codigoEditora}" />
-                            <input class="form-control" type="text" value="${editora.nombreEditora}" readonly />
+                            <input type="hidden" name="CodigoEditora" value="${libro.codigoEditora}" />
+                            <input class="form-control" type="text" value="${libro.nombreEditora}" readonly />
                         </div>
                     </div>
                     <div class="col-2">

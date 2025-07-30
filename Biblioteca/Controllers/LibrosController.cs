@@ -159,47 +159,59 @@ namespace Biblioteca.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoLibro,Titulo,SignaturaTopografica,Isbn,CodigoEditora,AnioPublicacion,Ciencia,CodigoIdioma")] Libro libro)
+        public async Task<IActionResult> Edit(int id, [Bind("CodigoLibro,Titulo,SignaturaTopografica,Isbn,CodigoEditora,AnioPublicacion,Ciencia,CodigoIdioma")] Libro libro, int[] autores, List<TipoBibliografia> bibliografias)
         {
             if (id != libro.CodigoLibro)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    await service.ActualizarAsync(libro);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!LibroExists(libro.CodigoLibro))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                var idiomas = await servicioIdioma.ObtenerTodosAsync();
+
+                if (!idiomas.Any())
+                    return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
+
+                ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
+                return View(libro);
             }
 
-            var idiomas = await servicioIdioma.ObtenerTodosAsync();
+            try
+            {
+                libro.LibrosAutores = [];
 
-            if (!idiomas.Any())
-                return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
+                foreach (int codigoAutor in autores)
+                {
+                    libro.LibrosAutores.Add(new()
+                    {
+                        CodigoAutor = codigoAutor
+                    });
+                }
 
-            var editoras = await servicioEditoras.ObtenerTodosAsync();
+                libro.LibrosBibliografias = [];
 
-            if (!editoras.Any())
-                return RedirectToAction("Index", "Editoras", new { RedirectedFrom = "CreateBook" });
-
-            ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
-            ViewData["Editoras"] = new SelectList(editoras, "CodigoEditora", "NombreEditora");
-
-            return View(libro);
+                foreach (var biblio in bibliografias)
+                {
+                    libro.LibrosBibliografias.Add(new()
+                    {
+                        TipoBibliografia = biblio
+                    });
+                }
+                await service.ActualizarAsync(libro);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!LibroExists(libro.CodigoLibro))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Libros/Delete/5

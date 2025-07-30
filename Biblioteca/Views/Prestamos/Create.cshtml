@@ -23,7 +23,14 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" id="formCrearPrestamo">
+            <div id="libro-container">
+                <div class="form-group my-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeleccionarEditora">
+                        Seleccionar Libro
+                    </button>
+                </div>               
+            </div>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-2">
                 <label asp-for="CodigoLibro" class="control-label"></label>
@@ -50,6 +57,8 @@
         </form>
     </div>
 </div>
+
+
 }
 
 @section Scripts {
@@ -57,3 +66,35 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+<div class="modal fade" id="modalSeleccionarLibro" tabindex="-1" aria-labelledby="modalLibroLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalLibroLabel">Seleccionar Libro</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="d-flex" id="frmBuscarLibro">
+                    <input name="filtroEditora" class="form-control me-2" type="search" placeholder="Buscar Editora" aria-label="Search" />
+                    <button class="btn btn-outline-success" id="btnBuscarEditora" type="button" onclick="buscarEditoraClick()">Buscar</button>
+                </form>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Titulo</th>
+                            <th>Autor</th>
+                            <th>Ciencia</th>
+                            <th>Anio publicacion</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-Libros">
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>

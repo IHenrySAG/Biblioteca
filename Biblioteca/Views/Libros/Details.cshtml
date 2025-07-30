@@ -16,6 +16,18 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Titulo)
         </dd>
+        @if (Model.LibrosAutores.Count > 0)
+        {
+            <dt class="col-sm-2">Autores</dt>
+            <dd class="col-sm-10">
+                <ul>
+                    @foreach (var item in Model.LibrosAutores)
+                    {
+                        <li>@Html.DisplayFor(modelItem => item.Autor.NombreAutor)</li>
+                    }
+                </ul>
+            </dd>
+        }
         <dt class="col-sm-2">Signatura Topografica</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.SignaturaTopografica)
@@ -54,7 +66,7 @@
         }
     </dl>
     <div class="form-group d-flex mt-3">
-        <a asp-action="Edit" class="btn btn-success">Editar</a>
+        <a asp-action="Edit" class="btn btn-success" asp-route-id="@Model.CodigoLibro">Editar</a>
         <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
     </div>
 </div>
