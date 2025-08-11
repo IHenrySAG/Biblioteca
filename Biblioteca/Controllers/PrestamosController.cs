@@ -5,6 +5,7 @@ using Biblioteca.Model;
 using Biblioteca.Servicios;
 using Biblioteca.Common;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Biblioteca.Model.ViewModel;
 
 namespace Biblioteca.Controllers
 {
@@ -21,7 +22,18 @@ namespace Biblioteca.Controllers
         public async Task<IActionResult> Index()
         {
             var prestamos = await service.ObtenerTodosAsync();
-            return View(prestamos);
+
+            var prestamosVM = prestamos.Select(x => new PrestamoVM
+            {
+                CodigoPrestamo = x.CodigoPrestamo,
+                Libro = x.Libro.Titulo,
+                Estudiante = $"{x.Estudiante.Nombre} {x.Estudiante.Apellido}",
+                FechaPrestamo = x.FechaPrestamo,
+                FechaDevolucionEsperada = x.FechaDevolucionEsperada,
+                FechaDevolucion = x.FechaDevolucion,
+                MontoDia = x.MontoDia
+            });
+            return View(prestamosVM);
         }
 
         // GET: Prestamos/Details/5
@@ -58,29 +70,23 @@ namespace Biblioteca.Controllers
         // POST: Prestamos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoPrestamo,CodigoEmpleado,CodigoLibro,CodigoUsuario,CantidadDias,Comentario,Estado")] Prestamo prestamo)
+        public async Task<IActionResult> Create(Prestamo prestamo)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await service.AgregarAsync(prestamo);
-                return RedirectToAction(nameof(Index));
+                return View(prestamo);
             }
 
-            var empleados = await servicioEmpleado.ObtenerTodosAsync();
-            var libros = await servicioLibro.ObtenerTodosAsync();
-            var usuarios = await servicioEstudiantes.ObtenerTodosAsync();
+            prestamo.CodigoEmpleado=HttpContext.Session.GetInt32("CodigoEmpleado") ?? 0;
+            prestamo.FechaPrestamo = DateOnly.FromDateTime(DateTime.Now);
+            prestamo.FechaDevolucionEsperada = prestamo.FechaPrestamo?.AddDays(7);
+            await service.AgregarAsync(prestamo);
 
-            if (!empleados.Any())
-                return RedirectToAction("Create", "Empleados", new { RedirectedFrom = "CreatePrestamo" });
-            if (!libros.Any())
-                return RedirectToAction("Create", "Libros", new { RedirectedFrom = "CreatePrestamo" });
-            if (!usuarios.Any())
-                return RedirectToAction("Create", "Usuarios", new { RedirectedFrom = "CreatePrestamo" });
+            var libro = await servicioLibro.ObtenerPorIdAsync(prestamo.CodigoLibro);
+            libro!.Inventario = libro.Inventario - 1;
+            await servicioLibro.ActualizarAsync(libro);
 
-            ViewData["Empleados"] = new SelectList(empleados, "CodigoEmpleado", "Nombre");
-            ViewData["Libros"] = new SelectList(libros, "CodigoLibro", "Titulo");
-            ViewData["Usuarios"] = new SelectList(usuarios, "CodigoUsuario", "Nombre");
-            return View(prestamo);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Prestamos/Edit/5

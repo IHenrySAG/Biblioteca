@@ -91,6 +91,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(l => l.AnioPublicacion).HasColumnName("ANIO_PUBLICACION").IsRequired();
             builder.Property(l => l.Ciencia).HasColumnName("CIENCIA").HasMaxLength(30);
             builder.Property(l => l.CodigoIdioma).HasColumnName("CODIGO_IDIOMA").IsRequired();
+            builder.Property(l => l.Inventario).HasColumnName("INVENTARIO").IsRequired();
             builder.Property(l => l.Eliminado).HasColumnName("ELIMINADO");
             builder.HasOne(l => l.Editora)
                 .WithMany(e => e.Libros)
@@ -148,9 +149,11 @@ public class ContextoBiblioteca: DbContext
             builder.Property(p => p.CodigoLibro).HasColumnName("CODIGO_LIBRO").IsRequired();
             builder.Property(p => p.CodigoEstudiante).HasColumnName("CODIGO_ESTUDIANTE").IsRequired();
             builder.Property(p => p.FechaPrestamo).HasColumnName("FECHA_PRESTAMO").IsRequired();
+            builder.Property(p => p.FechaDevolucionEsperada).HasColumnName("FECHA_DEVOLUCION_ESPERADA");
             builder.Property(p => p.FechaDevolucion).HasColumnName("FECHA_DEVOLUCION");
             builder.Property(p => p.MontoDia).HasColumnName("MONTO_DIA").HasColumnType("decimal(10,2)");
-            builder.Property(p => p.CantidadDias).HasColumnName("CANTIDAD_DIAS");
+            builder.Property(p => p.MontoDiaRetraso).HasColumnName("MONTO_DIA_RETRASO").HasColumnType("decimal(10,2)");
+            builder.Property(p => p.MontoTotal).HasColumnName("MONTO_TOTAL").HasColumnType("decimal(10,2)");
             builder.Property(p => p.Comentario).HasColumnName("COMENTARIO");
             builder.Property(p => p.Eliminado).HasColumnName("ELIMINADO");
             builder.HasOne(p => p.Empleado)

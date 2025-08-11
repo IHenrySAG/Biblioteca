@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
 using Biblioteca.Common;
+using Biblioteca.Model.ViewModel;
 
 namespace Biblioteca.Controllers
 {
@@ -138,6 +139,62 @@ namespace Biblioteca.Controllers
         {
             await service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> BuscarEstudianteCarnetJson(string documento)
+        {
+            var estudiante = await service.ObtenerPorCarnetAsync(documento);
+
+            if(estudiante is null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return Json(null);
+            }
+
+            var estudianteVM = new EstudianteVM
+            {
+                CodigoEstudiante = estudiante.CodigoEstudiante,
+                Nombre = estudiante.Nombre,
+                Apellido = estudiante.Apellido,
+                Cedula = estudiante.Cedula,
+                NumeroCarnet = estudiante.NumeroCarnet,
+                CodigoTipo = estudiante.CodigoTipo,
+                PrestamoActivo = estudiante.Prestamos
+                    .Where(p => !(p.Eliminado ?? false))
+                    .Select(p=>p.Libro)
+                    .FirstOrDefault() ?? null
+            };
+
+            return Json(estudianteVM);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> BuscarEstudianteCedulaJson(string documento)
+        {
+            var estudiante = await service.ObtenerPorCedulaAsync(documento);
+
+            if (estudiante is null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return Json(null);
+            }
+
+            var estudianteVM = new EstudianteVM
+            {
+                CodigoEstudiante = estudiante.CodigoEstudiante,
+                Nombre = estudiante.Nombre,
+                Apellido = estudiante.Apellido,
+                Cedula = estudiante.Cedula,
+                NumeroCarnet = estudiante.NumeroCarnet,
+                CodigoTipo = estudiante.CodigoTipo,
+                PrestamoActivo = estudiante.Prestamos
+                    .Where(p => !(p.Eliminado ?? false))
+                    .Select(p => p.Libro)
+                    .FirstOrDefault() ?? null
+            };
+
+            return Json(estudianteVM);
         }
 
         private bool UsuarioExists(int id)

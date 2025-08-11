@@ -4,23 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Biblioteca.Model;
-public class Prestamo:EntidadBase
+namespace Biblioteca.Model.ViewModel;
+public class PrestamoVM
 {
     public int CodigoPrestamo { get; set; }
-    public int CodigoEmpleado { get; set; }
-    public int CodigoLibro { get; set; }
-    public int CodigoEstudiante { get; set; }
+    public string Libro { get; set; }
+    public string Estudiante { get; set; }
     public DateOnly? FechaPrestamo { get; set; }
     public DateOnly? FechaDevolucionEsperada { get; set; }
     public DateOnly? FechaDevolucion { get; set; }
     public decimal? MontoDia { get; set; }
     public decimal? MontoDiaRetraso { get; set; }
     public decimal? MontoTotal { get; set; }
-    public string? Comentario { get; set; }
     public string? Estado { get; set; }
-
-    public Empleado? Empleado { get; set; }
-    public Libro? Libro { get; set; }
-    public Estudiante? Estudiante { get; set; }
 }

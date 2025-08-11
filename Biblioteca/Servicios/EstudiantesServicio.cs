@@ -33,4 +33,24 @@ public class EstudiantesServicio(ContextoBiblioteca context) : ServicioBase<Estu
 
         return usuario;
     }
+
+    public async Task<Estudiante?> ObtenerPorCarnetAsync(string carnet)
+    {
+        return await context.Estudiantes
+            .AsNoTrackingWithIdentityResolution()
+            .Include(u => u.Prestamos)
+            .Where(x => x.NumeroCarnet == carnet.Trim())
+            .FirstOrDefaultAsync()
+        ?? null;
+    }
+
+    public async Task<Estudiante?> ObtenerPorCedulaAsync(string cedula)
+    {
+        return await context.Estudiantes
+            .AsNoTrackingWithIdentityResolution()
+            .Include(u => u.Prestamos)
+            .Where(x => x.Cedula == cedula.Trim())
+            .FirstOrDefaultAsync()
+        ?? null;
+    }
 }

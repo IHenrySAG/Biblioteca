@@ -1,4 +1,4 @@
-@model IEnumerable<Biblioteca.Model.Prestamo>
+@model IEnumerable<Biblioteca.Model.ViewModel.PrestamoVM>
 
 @{
     ViewData["Title"] = "Lista de Préstamos";
@@ -14,24 +14,46 @@
     <thead>
         <tr>
             <th>Codigo</th>
-            <th>Empleado</th>
             <th>Libro</th>
             <th>Estudiante</th>
-            <th>Cantidad Días</th>
-            <th>Comentario</th>
+            <th>Prestado el</th>
+            <th>Esperado el</th>
+            <th>Devuelto el</th>
+            <th>Monto x dia</th>
             <th>Accion</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            var fechaPrestamo = item.FechaPrestamo?.ToString("dd/MM/yyyy");
+            var fechaDevolucionEsperada = item.FechaDevolucionEsperada?.ToString("dd/MM/yyyy");
+            var fechaDevolucion = item.FechaDevolucion?.ToString("dd/MM/yyyy") ?? "No devuelto";
+            var montoDIa = item.MontoDia.Value.ToString("C");
+
+            string trClass;
+
+            if (item.FechaDevolucion.HasValue)
+            {
+                trClass = "table-success"; // Devuelto
+            }
+            else if (item.FechaDevolucionEsperada < DateOnly.FromDateTime(DateTime.Now))
+            {
+                trClass = "table-danger"; // Retrasado
+            }
+            else
+            {
+                trClass = "table-warning"; // En curso
+            }
+
+            <tr class="@trClass">
                 <td>@Html.DisplayFor(modelItem => item.CodigoPrestamo)</td>
-                <td>@Html.DisplayFor(modelItem => item.Empleado.Nombre)</td>
-                <td>@Html.DisplayFor(modelItem => item.Libro.Titulo)</td>
-                <td>@Html.DisplayFor(modelItem => item.Estudiante.Nombre)</td>
-                <td>@Html.DisplayFor(modelItem => item.CantidadDias)</td>
-                <td>@Html.DisplayFor(modelItem => item.Comentario)</td>
+                <td>@Html.DisplayFor(modelItem => item.Libro)</td>
+                <td>@Html.DisplayFor(modelItem => item.Estudiante)</td>
+                <td>@Html.DisplayFor(modelItem => fechaPrestamo)</td>
+                <td>@Html.DisplayFor(modelItem => fechaDevolucionEsperada)</td>
+                <td>@Html.DisplayFor(modelItem => fechaDevolucion)</td>
+                <td>@Html.DisplayFor(modelItem => montoDIa)</td>
                 <td>
                     <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoPrestamo">Ver detalles</a>
                     <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoPrestamo">Edit</a>

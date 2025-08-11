@@ -12,9 +12,12 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
     public override async Task<IEnumerable<Libro>> ObtenerTodosAsync()
     {
         return await context.Libros
+            .AsNoTrackingWithIdentityResolution()
             .Where(x=>!(x.Eliminado??false))
             .Include(l => l.Idioma)
             .Include(l => l.Editora)
+            .Include(l => l.LibrosAutores)
+            .ThenInclude(x=>x.Autor)
             .ToListAsync();
     }
 
@@ -24,6 +27,8 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
             .Where(x => !(x.Eliminado ?? false))
             .Include(l => l.Idioma)
             .Include(l => l.Editora)
+            .Include(l => l.LibrosAutores)
+            .ThenInclude(la => la.Autor)
             .Where(string.IsNullOrEmpty(filtro) ?
                 l => true :
                 l => l.Titulo.Contains(filtro) ||
@@ -80,6 +85,7 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
         libro.AnioPublicacion = entidad.AnioPublicacion;
         libro.Ciencia = entidad.Ciencia;
         libro.CodigoIdioma = entidad.CodigoIdioma;
+        libro.Inventario = entidad.Inventario;
 
         var bibliografiasAEliminar = libro.LibrosBibliografias.Select(x => x.TipoBibliografia);
 

@@ -50,6 +50,7 @@ create table LIBROS(
 	ANIO_PUBLICACION int not null,
 	CIENCIA varchar(30) null,
 	CODIGO_IDIOMA int not null,
+	INVENTARIO int not null,
 	ELIMINADO bit null
 )
 go
@@ -109,8 +110,8 @@ insert into TIPOS_PERSONAS (NOMBRE_TIPO) values
 ('Fisica'),('Juridica')
 go
 
-create table USUARIOS(
-	CODIGO_USUARIO int not null primary key identity(1,1),
+create table ESTUDIANTES(
+	CODIGO_ESTUDIANTE int not null primary key identity(1,1),
 	NOMBRE varchar(80) not null,
 	APELLIDO varchar(80) not null,
 	CEDULA varchar(11) not null,
@@ -120,8 +121,8 @@ create table USUARIOS(
 );
 go
 
-alter table USUARIOS
-add constraint FK_TIPO_PERSONA_USUARIO
+alter table ESTUDIANTES
+add constraint FK_TIPO_PERSONA_ESTUDIANTE
 foreign key (CODIGO_TIPO) references TIPOS_PERSONAS(CODIGO_TIPO)
 go
 
@@ -134,11 +135,22 @@ create table TANDA_LABOR(
 );
 go
 
+insert into TANDA_LABOR (NOMBRE_TANDA,HORA_INICIO,HORA_FIN)
+values ('Matutina', '08:00', '13:00')
+go
+
 create table ROLES(
 	CODIGO_ROL int not null primary key identity(1,1),
-	NOMBRE_ROL varchar(30) not null,
+	NOMBRE_ROL varchar(15) not null,
 	ELIMINADO bit null
 );
+go
+
+set identity_insert ROLES on
+insert into ROLES(CODIGO_ROL, NOMBRE_ROL) values
+(1, 'ADMIN'),(2, 'BIBLIOTECARIO'),(3, 'CATALOGADOR')
+go
+set identity_insert ROLES off
 
 create table EMPLEADOS(
 	CODIGO_EMPLEADO int not null primary key identity(1,1),
@@ -148,6 +160,9 @@ create table EMPLEADOS(
 	CODIGO_TANDA int not null,
 	PORCENTAJE_COMISION float null,
 	FECHA_INGRESO date null,
+	NOMBRE_USUARIO varchar(30) not null,
+	CONTRASENIA varchar(max) not null,
+	CODIGO_ROL int not null,
 	ELIMINADO bit null
 );
 go
@@ -166,12 +181,15 @@ create table PRESTAMO(
 	CODIGO_PRESTAMO int not null primary key identity(1,1),
 	CODIGO_EMPLEADO int not null,
 	CODIGO_LIBRO int not null,
-	CODIGO_USUARIO int not null,
+	CODIGO_ESTUDIANTE int not null,
 	FECHA_PRESTAMO date not null,
+	FECHA_DEVOLUCION_ESPERADA date not null,
 	FECHA_DEVOLUCION date null,
-	MONTO_DIA decimal(10,2) null,
-	CANTIDAD_DIAS int null,
+	MONTO_DIA decimal(10,2) not null,
+	MONTO_DIA_RETRASO decimal(10,2) not null,
+	MONTO_TOTAL decimal(10,2) null,
 	COMENTARIO varchar(max) null,
+	ESTADO varchar(20) null,
 	ELIMINADO bit null
 );
 go
@@ -187,6 +205,6 @@ foreign key (CODIGO_LIBRO) references LIBROS(CODIGO_LIBRO)
 go
 
 alter table PRESTAMO
-add constraint FK_USUARIO_PRESTAMO
-foreign key (CODIGO_USUARIO) references USUARIOS(CODIGO_USUARIO)
+add constraint FK_ESTUDIANTE_PRESTAMO
+foreign key (CODIGO_ESTUDIANTE) references ESTUDIANTES(CODIGO_ESTUDIANTE)
 go

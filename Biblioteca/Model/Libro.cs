@@ -15,6 +15,7 @@ public class Libro : EntidadBase
     public int AnioPublicacion { get; set; }
     public string? Ciencia { get; set; }
     public int CodigoIdioma { get; set; }
+    public int Inventario { get; set; }
 
     public Editora? Editora { get; set; }
     public Idioma? Idioma { get; set; }

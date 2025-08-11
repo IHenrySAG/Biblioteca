@@ -44,35 +44,3 @@
 //}
 
 
-$('#btnBuscarEditora').on('click', function () {
-    console.log('click')
-    var filtro = $('input[name="filtroEditora"]').val()
-    $.get('/Editoras/BuscarEditoraJson', { filtro: filtro })
-        .done(function (result) {
-            if (result.success) {
-                console.log("success")
-                console.log({ result })
-                $('#tbody-Editoras').html(
-                    result.data.map(editora => {
-                        return `<tr>
-                                    <td>
-                                        ${editora.CodigoEditora}
-                                    </td>
-                                    <td>
-                                        ${editora.NombreEditora}
-                                    </td>
-                                    <td>
-                                        ${editora.Descripcion}
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary text-white">Seleccionar</a>
-                                    </td>
-                                </tr>`
-                    });
-            } else {
-            }
-        })
-        .fail(function (xhr, status, error) {
-            console.error("Error al buscar:", error);
-        });
-})

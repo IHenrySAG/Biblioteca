@@ -9,7 +9,7 @@
 <h3>Nuevo Préstamo</h3>
 <hr />
 
-@if (ViewBag.ErrorLibros != null || ViewBag.ErrorUsuarios != null)
+@if (ViewBag.ErrorLibros != null || ViewBag.ErrorEstudiantes != null)
 {
     <div class="alert alert-danger">
         @ViewBag.ErrorLibros <br />
@@ -22,28 +22,32 @@
 }else{
 
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" id="formCrearPrestamo">
+    <div class="col-md-6">
+        <form asp-action="Create" method ="post" id="formCrearPrestamo">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div id="estudiante-container">
+                <div class="form-group my-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeleccionarEstudiante">
+                        Buscar Estudiante
+                    </button>
+                </div>               
+            </div>
             <div id="libro-container">
                 <div class="form-group my-3">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeleccionarEditora">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeleccionarLibro">
                         Seleccionar Libro
                     </button>
                 </div>               
             </div>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-2">
-                <label asp-for="CodigoLibro" class="control-label"></label>
-                <select asp-for="CodigoLibro" class="form-control" asp-items="ViewBag.Libros"></select>
+                <label asp-for="MontoDia" class="control-label">Monto x Dia</label>
+                <input class="form-control" asp-for="MontoDia" type="number" />
+                <span asp-validation-for="MontoDia" class="text-danger"></span>
             </div>
             <div class="form-group mb-2">
-                <label asp-for="CodigoEstudiante" class="control-label"></label>
-                <select asp-for="CodigoEstudiante" class="form-control" asp-items="ViewBag.Usuarios"></select>
-            </div>
-            <div class="form-group mb-2">
-                <label asp-for="CantidadDias" class="control-label"></label>
-                <input asp-for="CantidadDias" class="form-control" />
-                <span asp-validation-for="CantidadDias" class="text-danger"></span>
+                <label asp-for="MontoDiaRetraso" class="control-label">Monto x Dia de Retraso</label>
+                    <input class="form-control" asp-for="MontoDiaRetraso" type="number" />
+                <span asp-validation-for="MontoDiaRetraso" class="text-danger"></span>
             </div>
             <div class="form-group mb-2">
                 <label asp-for="Comentario" class="control-label"></label>
@@ -65,7 +69,40 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="~/js/crearPrestamo.js"></script>
 }
+
+
+<div class="modal fade" id="modalSeleccionarEstudiante" tabindex="-1" aria-labelledby="modalEstudianteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalLibroLabel">Seleccionar Estudiante</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="d-flex align-items-end" id="frmBuscarEstudiante">
+                    <div class="form-group me-2">
+                        <label for="slcDocumentoEstudiante" class="form-label">Buscar por:</label>
+                        <select class="form-select me-2" id="slcTipoDocumentoEstudiante">
+                            <option value="1">Carnet</option>
+                            <option value="2">Cedula</option>
+                        </select>
+                    </div>
+                    <div class="d-flex flex-fill">
+                        <input name="filtroEstudiante" class="form-control me-2" type="search" placeholder="Buscar Estudiante" aria-label="Search" autocomplete="off" />
+                        <button class="btn btn-outline-success" id="btnBuscarEditora" type="submit" onclick="buscarEstudianteClick()">Buscar</button>
+                    </div>
+                    
+                </form>
+                <div class="p-4" id="buscar-estudiante-container">
+                     
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="modalSeleccionarLibro" tabindex="-1" aria-labelledby="modalLibroLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -75,9 +112,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form class="d-flex" id="frmBuscarLibro">
-                    <input name="filtroEditora" class="form-control me-2" type="search" placeholder="Buscar Editora" aria-label="Search" />
-                    <button class="btn btn-outline-success" id="btnBuscarEditora" type="button" onclick="buscarEditoraClick()">Buscar</button>
+                <form class="d-flex" id="frmBuscarLibro" onsubmit="buscar">
+                    <input name="filtroLibro" class="form-control me-2" type="search" placeholder="Buscar Editora" aria-label="Search" />
+                    <button class="btn btn-outline-success" type="submit">Buscar</button>
                 </form>
                 <table class="table table-striped">
                     <thead>

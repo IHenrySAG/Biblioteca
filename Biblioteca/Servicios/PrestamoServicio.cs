@@ -10,10 +10,9 @@ public class PrestamoServicio(ContextoBiblioteca context) : ServicioBase<Prestam
     public override async Task<IEnumerable<Prestamo>> ObtenerTodosAsync()
     {
         return await context.Prestamos
-            //.Where(x => !(x.Eliminado ?? false))
-            //.Include(p => p.Empleado)
-            //.Include(p => p.Libro)
-            //.Include(p => p.Estudiante)
+        .Where(x => !(x.Eliminado ?? false))
+        .Include(p => p.Libro)
+        .Include(p => p.Estudiante)
             .ToListAsync();
     }
 
