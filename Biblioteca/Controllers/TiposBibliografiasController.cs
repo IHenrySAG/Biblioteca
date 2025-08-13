@@ -6,7 +6,7 @@ using Biblioteca.Common;
 
 namespace Biblioteca.Controllers
 {
-    [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
+    [Authorization("nadie")]
     public class TiposBibliografiasController(ContextoBiblioteca context, TipoBibliografiaServicio service) : Controller
     {
         // GET: TiposBibliografias
@@ -16,8 +16,8 @@ namespace Biblioteca.Controllers
             return View(tipos);
         }
 
-        // GET: TiposBibliografias/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: TiposBibliografias/Detalles/5
+        public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -30,16 +30,16 @@ namespace Biblioteca.Controllers
             return View(tipo);
         }
 
-        // GET: TiposBibliografias/Create
-        public IActionResult Create()
+        // GET: TiposBibliografias/Crear
+        public IActionResult Crear()
         {
             return View();
         }
 
-        // POST: TiposBibliografias/Create
+        // POST: TiposBibliografias/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoBibliografia,NombreBibliografia,Descripcion,Estado")] TipoBibliografia tipo)
+        public async Task<IActionResult> Crear([Bind("CodigoBibliografia,NombreBibliografia,Descripcion,Estado")] TipoBibliografia tipo)
         {
             if (ModelState.IsValid)
             {
@@ -49,8 +49,8 @@ namespace Biblioteca.Controllers
             return View(tipo);
         }
 
-        // GET: TiposBibliografias/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: TiposBibliografias/Editar/5
+        public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -62,10 +62,10 @@ namespace Biblioteca.Controllers
             return View(tipo);
         }
 
-        // POST: TiposBibliografias/Edit/5
+        // POST: TiposBibliografias/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoBibliografia,NombreBibliografia,Descripcion,Estado")] TipoBibliografia tipo)
+        public async Task<IActionResult> Editar(int id, [Bind("CodigoBibliografia,NombreBibliografia,Descripcion,Estado")] TipoBibliografia tipo)
         {
             if (id != tipo.CodigoBibliografia)
                 return NotFound();
@@ -88,8 +88,8 @@ namespace Biblioteca.Controllers
             return View(tipo);
         }
 
-        // GET: TiposBibliografias/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: TiposBibliografias/Eliminar/5
+        public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -101,9 +101,9 @@ namespace Biblioteca.Controllers
             return View(tipo);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ConfirmarEliminar(int id)
         {
             await service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));

@@ -1,0 +1,35 @@
+@model Biblioteca.Model.Editora
+
+@{
+    ViewData["Title"] = "Nueva Editora";
+}
+
+<h3>Nueva Editora</h3>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Crear">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="NombreEditora" class="control-label">Nombre Editora</label>
+                <input asp-for="NombreEditora" class="form-control" maxlength="30" />
+                <span asp-validation-for="NombreEditora" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <textarea asp-for="Descripcion" class="form-control" placeholder="Descripcion de la Editorial" style="height: 300px"></textarea>
+                <label asp-for="Descripcion">Descripcion de la Editorial</label>
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+            <div class="form-group d-flex mt-3">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

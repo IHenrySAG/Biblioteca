@@ -5,9 +5,14 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Idioma</a>
-    <h1>Lista de idiomas</h1>
-    <div></div>
+    <a class="btn btn-success align-self-end" asp-action="Crear">Nuevo Idioma</a>
+    <h2>Lista de idiomas</h2>
+    <div>
+        <form class="d-flex" role="search" method="get">
+            <input name="filtro" class="form-control me-2" type="search" value="@ViewBag.Filtro" placeholder="Buscar" aria-label="Search" />
+            <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+    </div>
 </div>
 
 <table class="table table-striped">
@@ -25,9 +30,9 @@
                 <td>@Html.DisplayFor(modelItem => item.CodigoIdioma)</td>
                 <td>@Html.DisplayFor(modelItem => item.NombreIdioma)</td>
                 <td>
-                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoIdioma">Ver detalles</a>
-                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoIdioma">Edit</a>
-                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoIdioma">Delete</a>
+                    <a class="btn btn-info text-white" asp-action="Detalles" asp-route-id="@item.CodigoIdioma">Detalles</a>
+                    <a class="btn btn-warning ms-2 text-white" asp-action="Editar" asp-route-id="@item.CodigoIdioma">Editar</a>
+                    <a class="btn btn-danger ms-2" asp-action="Eliminar" asp-route-id="@item.CodigoIdioma">Eliminar</a>
                 </td>
             </tr>
         }

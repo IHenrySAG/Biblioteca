@@ -6,6 +6,7 @@ using Biblioteca.Servicios;
 using Biblioteca.Common;
 using Biblioteca.Views.Empleados;
 using Microsoft.IdentityModel.Tokens;
+using Biblioteca.Model.ViewModel;
 
 namespace Biblioteca.Controllers
 {
@@ -17,15 +18,17 @@ namespace Biblioteca.Controllers
     ) : Controller
     {
         // GET: Empleados
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? filtro)
         {
-            var empleados = await service.ObtenerTodosAsync();
+            var empleados = await service.ObtenerTodosAsync(filtro);
+
+            ViewBag.Filtro = filtro;
 
             return View(empleados);
         }
 
-        // GET: Empleados/Details/5
-        [Authorization(nameof(ERoles.BIBLIOTECARIO))]
+        // GET: Empleados/Detalles/5
+        [Authorization(nameof(ERoles.BIBLIOTECARIO), nameof(ERoles.CATALOGADOR))]
         public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null)
@@ -50,13 +53,13 @@ namespace Biblioteca.Controllers
             return View(empleado);
         }
 
-        // GET: Empleados/Create
-        public async Task<IActionResult> Create()
+        // GET: Empleados/Crear
+        public async Task<IActionResult> Crear()
         {
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
             if (!tandas.Any())
-                return RedirectToAction("Create", "TandasLabor", new { RedirectedFrom = "CreateEmpleado" });
+                return RedirectToAction("Crear", "TandasLabor", new { RedirectedFrom = "CreateEmpleado" });
 
             var roles = await context.Roles
                 .OrderByDescending(x=>x.NombreRol)
@@ -67,25 +70,11 @@ namespace Biblioteca.Controllers
             return View();
         }
 
-        // POST: Empleados/Create
+        // POST: Empleados/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoEmpleado,Nombre,Apellido,Cedula,CodigoTanda,PorcentajeComision,FechaIngreso,NombreUsuario,Contrasenia,RepetirContrasenia,CodigoRol,Estado")] Empleado empleado)
+        public async Task<IActionResult> Crear( Empleado empleado)
         {
-            if (ModelState.IsValid)
-            {
-                if (empleado.Contrasenia != empleado.RepetirContrasenia)
-                {
-                    ModelState.AddModelError("RepetirContrasenia", "Las contraseñas no coinciden.");
-                    return View(empleado);
-                }
-
-
-
-                await service.AgregarAsync(empleado);
-                return RedirectToAction(nameof(Index));
-            }
-
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
             var roles = await context.Roles
@@ -95,16 +84,31 @@ namespace Biblioteca.Controllers
             ViewData["Roles"] = new SelectList(roles, "CodigoRol", "NombreRol");
             ViewData["TandasLabor"] = new SelectList(tandas, "CodigoTanda", "NombreTanda");
 
-            if (empleado.Contrasenia != empleado.RepetirContrasenia)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("RepetirContrasenia", "Las contraseñas no coinciden.");
+                if (empleado.Contrasenia != empleado.RepetirContrasenia)
+                {
+                    ModelState.AddModelError("RepetirContrasenia", "Las contraseñas no coinciden.");
+                    return View(empleado);
+                }
+
+                try
+                {
+                    await service.AgregarAsync(empleado);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (InternalException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(empleado);
+                }
             }
 
             return View(empleado);
         }
 
-        // GET: Empleados/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Empleados/Editar/5
+        public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -116,29 +120,48 @@ namespace Biblioteca.Controllers
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
             if (!tandas.Any())
-                return RedirectToAction("Create", "TandasLabor", new { RedirectedFrom = "EditEmpleado" });
+                return NotFound();
 
             ViewData["TandasLabor"] = new SelectList(tandas, "CodigoTanda", "NombreTanda");
-            return View(empleado);
+            ViewBag.Roles = new SelectList(context.Roles.OrderByDescending(x => x.NombreRol), "CodigoRol", "NombreRol", empleado.CodigoRol);
+            
+            var empleadoVM=new EditarEmpleadoVM
+            {
+                CodigoEmpleado = empleado.CodigoEmpleado,
+                Nombre = empleado.Nombre,
+                Apellido = empleado.Apellido,
+                Cedula = empleado.Cedula,
+                CodigoTanda = empleado.CodigoTanda,
+                FechaIngreso = empleado.FechaIngreso,
+                NombreUsuario = empleado.NombreUsuario,
+                CodigoRol = empleado.CodigoRol
+            };
+            return View(empleadoVM);
         }
 
-        // POST: Empleados/Edit/5
+        // POST: Empleados/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoEmpleado,Nombre,Apellido,Cedula,CodigoTanda,PorcentajeComision,FechaIngreso,Estado")] Empleado empleado)
+        public async Task<IActionResult> Editar(int id, EditarEmpleadoVM empleadoVM)
         {
-            if (id != empleado.CodigoEmpleado)
+            if (id != empleadoVM.CodigoEmpleado)
                 return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await service.ActualizarAsync(empleado);
+                    await service.ActualizarAsync(empleadoVM);
+                }
+                catch(InternalException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    ViewData["TandasLabor"] = new SelectList(await servicioTandaLabor.ObtenerTodosAsync(), "CodigoTanda", "NombreTanda");
+                    return View(empleadoVM);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmpleadoExists(empleado.CodigoEmpleado))
+                    if (!EmpleadoExists(empleadoVM.CodigoEmpleado))
                         return NotFound();
                     else
                         throw;
@@ -148,15 +171,12 @@ namespace Biblioteca.Controllers
 
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
-            if (!tandas.Any())
-                return RedirectToAction("Create", "TandasLabor", new { RedirectedFrom = "EditEmpleado" });
-
             ViewData["TandasLabor"] = new SelectList(tandas, "CodigoTanda", "NombreTanda");
-            return View(empleado);
+            return View(empleadoVM);
         }
 
-        // GET: Empleados/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Empleados/Eliminar/5
+        public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -168,9 +188,9 @@ namespace Biblioteca.Controllers
             return View(empleado);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ConfirmarEliminar(int id)
         {
             await service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));
@@ -314,6 +334,47 @@ namespace Biblioteca.Controllers
             int codigoEmpleado = HttpContext.Session.GetInt32("CodigoEmpleado") ?? 0;
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet("Empleados/{id}/Prestamos")]
+        public async Task<IActionResult> PrestamosPorEmpleado(int? id, string? filtro)
+        {
+            if (id == null)
+                return NotFound();
+
+            var empleado = await service.ObtenerPorIdAsync(id.Value);
+            if (empleado == null)
+                return NotFound();
+
+            var prestamos = empleado.Prestamos?
+                .Where(p => !(p.Eliminado ?? false))
+                .Where(string.IsNullOrEmpty(filtro) ?
+                l => true :
+                l => l.CodigoPrestamo.ToString().Contains(filtro) ||
+                      l.Libro.Titulo.Contains(filtro) ||
+                      l.Estudiante.Nombre.Contains(filtro) ||
+                      l.Estudiante.Apellido.Contains(filtro) ||
+                      l.FechaPrestamo.ToString().Contains(filtro) ||
+                      (l.FechaDevolucion.ToString() ?? "").Contains(filtro) ||
+                      l.FechaDevolucionEsperada.ToString().Contains(filtro) ||
+                      l.MontoDia.ToString().Contains(filtro))
+                .OrderByDescending(p => p.FechaPrestamo)
+                .Select(p => new PrestamoVM
+                {
+                    CodigoPrestamo = p.CodigoPrestamo,
+                    FechaPrestamo = p.FechaPrestamo,
+                    FechaDevolucion = p.FechaDevolucion,
+                    FechaDevolucionEsperada = p.FechaDevolucionEsperada,
+                    Estudiante = p.Estudiante.Nombre,
+                    Libro = p.Libro.Titulo,
+                })
+                .ToList() ?? new List<PrestamoVM>();
+
+            ViewBag.Title = "Prestamos del empleado " + empleado.Nombre;
+            ViewBag.CodigoEmpleado = empleado.CodigoEmpleado;
+            ViewBag.Filtro = filtro;
+
+            return View(prestamos);
         }
 
         private bool EmpleadoExists(int id)

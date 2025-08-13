@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Biblioteca.Model;
+using Biblioteca.Model.ViewModel;
 
 namespace Biblioteca.Servicios;
 public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(context)
 {
-    public override async Task<IEnumerable<Libro>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Libro>> ObtenerTodosAsync(string filtro=null)
     {
         return await context.Libros
             .AsNoTrackingWithIdentityResolution()
@@ -18,17 +19,6 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
             .Include(l => l.Editora)
             .Include(l => l.LibrosAutores)
             .ThenInclude(x=>x.Autor)
-            .ToListAsync();
-    }
-
-    public async Task<List<Libro>> ObtenerConFiltroAsync(string filtro)
-    {
-        return await context.Libros
-            .Where(x => !(x.Eliminado ?? false))
-            .Include(l => l.Idioma)
-            .Include(l => l.Editora)
-            .Include(l => l.LibrosAutores)
-            .ThenInclude(la => la.Autor)
             .Where(string.IsNullOrEmpty(filtro) ?
                 l => true :
                 l => l.Titulo.Contains(filtro) ||
@@ -36,6 +26,27 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
                       l.Isbn.Contains(filtro) ||
                       l.Editora.NombreEditora.Contains(filtro) ||
                       l.Idioma.NombreIdioma.Contains(filtro))
+            .ToListAsync();
+    }
+
+    public async Task<List<Libro>> ObtenerPorIdIdiomaAsync(int id, string? filtro)
+    {
+        return await ConsultarListaConFiltro(filtro)
+            .Where(l => l.CodigoIdioma == id)
+            .ToListAsync();
+    }
+
+    public async Task<List<Libro>> ObtenerPorIdEditoraAsync(int id, string? filtro)
+    {
+        return await ConsultarListaConFiltro(filtro)
+            .Where(l => l.CodigoEditora == id)
+            .ToListAsync();
+    }
+
+    public async Task<List<Libro>> ObtenerPorIdAutorAsync(int id, string? filtro)
+    {
+        return await ConsultarListaConFiltro(filtro)
+            .Where(l => l.LibrosAutores.Any(x=>x.CodigoAutor==id))
             .ToListAsync();
     }
 
@@ -99,5 +110,23 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
         await context.SaveChangesAsync();
 
         return libro;
+    }
+
+    private IQueryable<Libro> ConsultarListaConFiltro(string filtro)
+    {
+        return context.Libros
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => !(x.Eliminado ?? false))
+            .Include(l => l.Idioma)
+            .Include(l => l.Editora)
+            .Include(l => l.LibrosAutores)
+            .ThenInclude(la => la.Autor)
+            .Where(string.IsNullOrEmpty(filtro) ?
+                l => true :
+                l => l.Titulo.Contains(filtro) ||
+                      l.SignaturaTopografica.Contains(filtro) ||
+                      l.Isbn.Contains(filtro) ||
+                      l.Editora.NombreEditora.Contains(filtro) ||
+                      l.Idioma.NombreIdioma.Contains(filtro));
     }
 }

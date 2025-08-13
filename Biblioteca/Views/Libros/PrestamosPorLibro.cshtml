@@ -1,0 +1,81 @@
+@model IEnumerable<Biblioteca.Model.ViewModel.PrestamoVM>
+@using Biblioteca.Common
+
+@{
+    ViewData["Title"] = ViewBag.Title;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <h2>@ViewData["Title"]</h2>
+    <div>
+        <form class="d-flex"  method="get">
+            <input class="form-control me-2" type="search" name="filtro" placeholder="Buscar por libro o estudiante" aria-label="Search" value="@ViewBag.Filtro">
+            <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="form-group mb-2">
+        <a class="btn btn-secondary text-white ms-1" asp-action="Detalles" asp-route-id="@ViewBag.CodigoLibro">Volver a detalle de libro</a>
+    </div>
+    <div class="btn-group ms-1" role="group">
+        <a class="btn btn-outline-primary" asp-controller="Prestamos" asp-action="ExportarPrestamosPorLibroCsv" asp-route-idLibro="@ViewBag.CodigoLibro" title="Exportar todo como CSV">
+            <i class="bi bi-file-earmark-arrow-down"></i> Exportar todo como CSV
+        </a>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Libro</th>
+            <th>Estudiante</th>
+            <th>Prestado el</th>
+            <th>Esperado el</th>
+            <th>Devuelto el</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var fechaPrestamo = item.FechaPrestamo?.ToString("dd/MM/yyyy");
+            var fechaDevolucionEsperada = item.FechaDevolucionEsperada?.ToString("dd/MM/yyyy");
+            var fechaDevolucion = item.FechaDevolucion?.ToString("dd/MM/yyyy") ?? "No devuelto";
+
+            string trClass;
+
+            if (item.FechaDevolucion.HasValue)
+            {
+                trClass = "table-success text-success"; // Devuelto
+            }
+            else if (item.FechaDevolucionEsperada < DateOnly.FromDateTime(DateTime.Now))
+            {
+                trClass = "table-danger text-danger"; // Retrasado
+            }
+            else
+            {
+                trClass = "table-warning"; // En curso
+            }
+
+            <tr class="@trClass">
+                <td>@Html.DisplayFor(modelItem => item.CodigoPrestamo)</td>
+                <td>@item.Libro.ToMaxLength(50)</td>
+                <td>@item.Estudiante.ToMaxLength(50)</td>
+                <td>@Html.DisplayFor(modelItem => fechaPrestamo)</td>
+                <td>@Html.DisplayFor(modelItem => fechaDevolucionEsperada)</td>
+                <td>@Html.DisplayFor(modelItem => fechaDevolucion)</td>
+                <td>
+                    <a class="btn btn-info text-white" asp-controller="Prestamos" asp-action="Detalles" asp-route-id="@item.CodigoPrestamo">Detalles</a>
+
+                    @if (item.FechaDevolucion == null)
+                    {
+                        <a class="btn btn-primary text-white ms-1" asp-controller="Prestamos" asp-action="DevolverLibro" asp-route-id="@item.CodigoPrestamo">Devolucion</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

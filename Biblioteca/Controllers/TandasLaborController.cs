@@ -19,8 +19,8 @@ namespace Biblioteca.Controllers
             return View(tandas);
         }
 
-        // GET: TandasLabor/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: TandasLabor/Detalles/5
+        public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -33,16 +33,16 @@ namespace Biblioteca.Controllers
             return View(tanda);
         }
 
-        // GET: TandasLabor/Create
-        public IActionResult Create()
+        // GET: TandasLabor/Crear
+        public IActionResult Crear()
         {
             return View();
         }
 
-        // POST: TandasLabor/Create
+        // POST: TandasLabor/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoTanda,NombreTanda,HoraInicio,HoraFin,Estado")] TandaLabor tanda)
+        public async Task<IActionResult> Crear([Bind("CodigoTanda,NombreTanda,HoraInicio,HoraFin,Estado")] TandaLabor tanda)
         {
             if (ModelState.IsValid)
             {
@@ -52,8 +52,8 @@ namespace Biblioteca.Controllers
             return View(tanda);
         }
 
-        // GET: TandasLabor/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: TandasLabor/Editar/5
+        public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -65,10 +65,10 @@ namespace Biblioteca.Controllers
             return View(tanda);
         }
 
-        // POST: TandasLabor/Edit/5
+        // POST: TandasLabor/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoTanda,NombreTanda,HoraInicio,HoraFin,Estado")] TandaLabor tanda)
+        public async Task<IActionResult> Editar(int id, [Bind("CodigoTanda,NombreTanda,HoraInicio,HoraFin,Estado")] TandaLabor tanda)
         {
             if (id != tanda.CodigoTanda)
                 return NotFound();
@@ -91,8 +91,8 @@ namespace Biblioteca.Controllers
             return View(tanda);
         }
 
-        // GET: TandasLabor/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: TandasLabor/Eliminar/5
+        public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -104,9 +104,9 @@ namespace Biblioteca.Controllers
             return View(tanda);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ConfirmarEliminar(int id)
         {
             await service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));

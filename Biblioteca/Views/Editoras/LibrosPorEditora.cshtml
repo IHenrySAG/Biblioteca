@@ -1,0 +1,81 @@
+@model IEnumerable<Biblioteca.Model.ViewModel.LibroVM>
+
+@{
+    ViewData["Title"] = "Libros de la Editora "+ViewBag.Editora;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div></div>
+    <h3>@ViewData["Title"]</h3>
+    <div>
+        <form class="d-flex" role="search" method="get">
+            <input name="filtro" class="form-control me-2" type="search" value="@ViewBag.Filtro" placeholder="Search" aria-label="Search" />
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+@if (ViewBag.Mensaje == null)
+{
+    <div class="btn-group ms-1" role="group">
+        <a class="btn btn-outline-primary" asp-controller="Libros" asp-action="ExportarLibrosPorEditoraCsv" asp-route-idEditora="@ViewBag.CodigoEditora" title="Exportar Todo como CSV">
+            <i class="bi bi-file-earmark-arrow-down"></i> Exportar Todo como CSV
+        </a>
+    </div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Codigo</th>
+            <th>Titulo</th>
+            <th>Editorial</th>
+            <th>Ciencia</th>
+            <th>Idioma</th>
+            <th>Anio</th>
+            <th>Inventario</th>
+                    
+            <th>
+                Accion
+            </th>
+        </tr>
+    </thead>
+    @if (ViewBag.Mensaje != null)
+    {
+        <tr>
+            <td colspan="8" class="text-center text-danger">
+                @ViewBag.Mensaje
+            </td>
+        </tr>
+    }else{
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CodigoLibro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Titulo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Editora)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ciencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Idioma)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AnioPublicacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Inventario)
+                </td>
+                <td>
+                        <a class="btn btn-info text-white" asp-controller="Libros" asp-action="Detalles" asp-route-id="@item.CodigoLibro">Detalles</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    }
+</table>

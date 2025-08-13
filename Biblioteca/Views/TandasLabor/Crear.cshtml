@@ -1,0 +1,40 @@
+@model Biblioteca.Model.TandaLabor
+
+@{
+    ViewData["Title"] = "Nueva Tanda Laboral";
+}
+
+<h3>Nueva Tanda Laboral</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Crear">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-2">
+                <label asp-for="NombreTanda" class="control-label">Nombre Tanda</label>
+                <input asp-for="NombreTanda" class="form-control" maxlength="30" />
+                <span asp-validation-for="NombreTanda" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="HoraInicio" class="control-label">Hora de Inicio</label>
+                <input asp-for="HoraInicio" class="form-control" type="time" />
+                <span asp-validation-for="HoraInicio" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="HoraFin" class="control-label">Hora Fin</label>
+                <input asp-for="HoraFin" class="form-control" type="time" />
+                <span asp-validation-for="HoraFin" class="text-danger"></span>
+            </div>
+            <div class="form-group d-flex mt-3">
+                <input type="submit" value="Guardar" class="btn btn-success" />
+                <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

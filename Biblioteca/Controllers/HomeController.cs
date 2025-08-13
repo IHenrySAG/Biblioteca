@@ -59,6 +59,13 @@ public class HomeController(EmpleadoServicio _servicio) : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpGet("/Error{code}")]
+    public IActionResult Error(int code)
+    {
+        Response.StatusCode = code;
+        return View("Error");
+    }
+
     [HttpGet("/Error404")]
     public IActionResult Error404()
     {

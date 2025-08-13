@@ -9,11 +9,14 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class EditoraServicio(ContextoBiblioteca context) : ServicioBase<Editora>(context)
 {
-    public override async Task<IEnumerable<Editora>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Editora>> ObtenerTodosAsync(string? filtro=null)
     {
         return await context.Editoras
-            .Where(x=>!(x.Eliminado??false))
+            .Where(x => !(x.Eliminado ?? false))
             .Include(l => l.Libros)
+            .Where(string.IsNullOrEmpty(filtro) ?
+                e => true :
+                e => e.NombreEditora.Contains(filtro) || (e.Descripcion ?? "").Contains(filtro))
             .ToListAsync();
     }
 

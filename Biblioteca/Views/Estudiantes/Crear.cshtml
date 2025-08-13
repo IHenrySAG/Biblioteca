@@ -1,0 +1,51 @@
+@model Biblioteca.Model.Estudiante
+
+@{
+    ViewData["Title"] = "Nuevo Estudiante";
+}
+
+<h3>Nuevo Estudiante</h3>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Crear">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" maxlength="80" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Apellido" class="control-label"></label>
+                <input asp-for="Apellido" class="form-control" maxlength="80" />
+                <span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Cedula" class="control-label"></label>
+                <input asp-for="Cedula" class="form-control" id="txtCedula" maxlength="13" />
+                <span asp-validation-for="Cedula" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="NumeroCarnet" class="control-label">Numero Carnet</label>
+                <input asp-for="NumeroCarnet" class="form-control" maxlength="10" />
+                <span asp-validation-for="NumeroCarnet" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CodigoTipo" class="control-label">Tipo Persona</label>
+                <select asp-for="CodigoTipo" class="form-select" asp-items="ViewBag.TiposPersonas"></select>
+            </div>
+            <div class="form-group d-flex mt-3">
+                <input type="submit" value="Guardar" class="btn btn-success" />
+                <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/crearEstudiante.js"></script>
+
+}

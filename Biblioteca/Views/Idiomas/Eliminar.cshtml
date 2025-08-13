@@ -1,0 +1,26 @@
+@model Biblioteca.Model.Idioma
+
+@{
+    ViewData["Title"] = "Borrar Idioma";
+}
+
+<h3>¿Está seguro que desea eliminar este idioma?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Codigo Idioma</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CodigoIdioma)
+        </dd>
+        <dt class="col-sm-2">Nombre</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NombreIdioma)
+        </dd>
+    </dl>
+
+    <form class="d-flex" asp-action="Eliminar">
+        <input type="hidden" asp-for="CodigoIdioma" />
+        <input type="submit" value="Eliminar" class="btn btn-danger" />
+        <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
+    </form>
+</div>

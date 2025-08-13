@@ -48,7 +48,7 @@ async function buscarEditoraClick() {
                 ${editora.nombreEditora}
             </td>
             <td>
-                ${editora.descripcion}
+                ${toMaxLength(editora.descripcion, 80)}
             </td>
             <td>
                 <button class="btn btn-primary text-white" onclick="seleccionarEditorial(${editora.codigoEditora})">Seleccionar</button>
@@ -169,10 +169,10 @@ function cargarListaBibliografias() {
                 <div class="col-10 mb-0">
                     <div class="form-group mb-2">
                         <label class="control-label">Nombre Bibliografia</label>
-                        <input class="form-control" type="text" name="bibliografias[${index}].NombreBibliografia" value="${bibliografia.nombreBibliografia}" readonly />
+                        <input class="form-control" type="text" name="bibliografias[${index}].NombreBibliografia" value="${bibliografia.nombreBibliografia}" maxlength="30" />
                     </div>
                 </div>
-                <div class="col-2"> 
+                <div class="col-2 d-flex align-items-end"> 
                         <div class="form-group mb-2">
                             <button class="btn btn-outline-primary" type="button" onclick="eliminarBibliografia(${index})">Eliminar</button>
                     </div>
@@ -226,4 +226,11 @@ async function buscarAutor(filtro) {
     }
 
     return await result.json()
+}
+
+function toMaxLength(texto, maxLength) {
+    if (!texto || texto.trim().length <= maxLength) {
+        return texto;
+    }
+    return texto.substring(0, maxLength - 3) + "...";
 }

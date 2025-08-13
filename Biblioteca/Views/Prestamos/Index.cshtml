@@ -1,25 +1,52 @@
 @model IEnumerable<Biblioteca.Model.ViewModel.PrestamoVM>
+@using Biblioteca.Common
 
 @{
-    ViewData["Title"] = "Lista de Préstamos";
+    ViewData["Title"] = ViewBag.Title;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Préstamo</a>
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <a class="btn btn-success align-self-end" asp-action="Crear">Nuevo Préstamo</a>
     <h1>Lista de préstamos</h1>
-    <div></div>
+    <div>
+        <form class="d-flex" asp-action="Index" method="get">
+            <input class="form-control me-2" type="search" name="filtro" placeholder="Buscar por libro o estudiante" aria-label="Search" value="@ViewBag.Filtro">
+            <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="form-group mb-2">
+        <label for="slcSeleccionarEstado" class="control-label">Estado de Prestamos</label>
+        <select id="slcSeleccionarEstado" class="form-select" asp-items="ViewBag.ListaEstados" ></select>
+    </div>
+    <div class="btn-group ms-1" role="group">
+        <a class="btn btn-outline-primary" asp-action="ExportarPrestamosCsv" asp-route-estado="@ViewBag.EstadoPrestamo" title="Exportar como CSV">
+            <i class="bi bi-file-earmark-arrow-down"></i> Exportar como CSV
+        </a>
+        <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden">Opciones de exportación</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item" asp-action="ExportarPrestamosXml" asp-route-estado="@ViewBag.EstadoPrestamo">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Exportar XML
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Codigo</th>
+            <th>#</th>
             <th>Libro</th>
             <th>Estudiante</th>
             <th>Prestado el</th>
             <th>Esperado el</th>
             <th>Devuelto el</th>
-            <th>Monto x dia</th>
             <th>Accion</th>
         </tr>
     </thead>
@@ -29,17 +56,16 @@
             var fechaPrestamo = item.FechaPrestamo?.ToString("dd/MM/yyyy");
             var fechaDevolucionEsperada = item.FechaDevolucionEsperada?.ToString("dd/MM/yyyy");
             var fechaDevolucion = item.FechaDevolucion?.ToString("dd/MM/yyyy") ?? "No devuelto";
-            var montoDIa = item.MontoDia.Value.ToString("C");
 
             string trClass;
 
             if (item.FechaDevolucion.HasValue)
             {
-                trClass = "table-success"; // Devuelto
+                trClass = "table-success text-success"; // Devuelto
             }
             else if (item.FechaDevolucionEsperada < DateOnly.FromDateTime(DateTime.Now))
             {
-                trClass = "table-danger"; // Retrasado
+                trClass = "table-danger text-danger"; // Retrasado
             }
             else
             {
@@ -48,18 +74,33 @@
 
             <tr class="@trClass">
                 <td>@Html.DisplayFor(modelItem => item.CodigoPrestamo)</td>
-                <td>@Html.DisplayFor(modelItem => item.Libro)</td>
-                <td>@Html.DisplayFor(modelItem => item.Estudiante)</td>
+                <td>@item.Libro.ToMaxLength(50)</td>
+                <td>@item.Estudiante.ToMaxLength(50)</td>
                 <td>@Html.DisplayFor(modelItem => fechaPrestamo)</td>
                 <td>@Html.DisplayFor(modelItem => fechaDevolucionEsperada)</td>
                 <td>@Html.DisplayFor(modelItem => fechaDevolucion)</td>
-                <td>@Html.DisplayFor(modelItem => montoDIa)</td>
                 <td>
-                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoPrestamo">Ver detalles</a>
-                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoPrestamo">Edit</a>
-                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoPrestamo">Delete</a>
+                    <a class="btn btn-info text-white" asp-action="Detalles" asp-route-id="@item.CodigoPrestamo">Detalles</a>
+
+                    @if (item.FechaDevolucion == null)
+                    {
+                        <a class="btn btn-primary text-white ms-1" asp-action="DevolverLibro" asp-route-id="@item.CodigoPrestamo">Devolucion</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<script>
+    const slcEstadoPrestamo=document.getElementById('slcSeleccionarEstado')
+    slcEstadoPrestamo.addEventListener('change', function (){
+        const url = this.value;
+        if (url) {
+            window.location.href = '/Prestamos/Estado/'+url; // Redirige a la página seleccionada
+        }else{
+            window.location.href = '/Prestamos'; // Redirige a la página principal
+
+        }
+    })
+</script>

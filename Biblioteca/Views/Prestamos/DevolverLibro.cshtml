@@ -1,0 +1,144 @@
+@model Biblioteca.Model.Prestamo
+
+@{
+    ViewData["Title"] = $"Devolver Libro - Prestamo no.{@Model.CodigoPrestamo}";
+}
+
+<h4>Devolver Libro - Prestamo no.@Model.CodigoPrestamo</h4>
+<hr />
+
+@if (ViewBag.ErrorLibro != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorLibro
+    </div>
+    <div class="form-group d-flex mt-3">
+        <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
+    </div>
+}
+else
+{
+    <div>
+        <h4>Estudiante</h4>
+        <dl class="row">
+            <dt class="col-sm-3">Número Carnet</dt>
+            <dd class="col-sm-9">
+                @Model.Estudiante.NumeroCarnet
+            </dd>
+            <dt class="col-sm-3">Cédula</dt>
+            <dd class="col-sm-9">
+                @Model.Estudiante.Cedula
+            </dd>
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">
+                @Model.Estudiante.Nombre
+            </dd>
+            <dt class="col-sm-3">Apellido</dt>
+            <dd class="col-sm-9">
+                @Model.Estudiante.Apellido
+            </dd>
+        </dl>
+        <hr />
+
+        <h4>Libro</h4>
+        <dl class="row">
+            <dt class="col-sm-3">Codigo Libro</dt>
+            <dd class="col-sm-9">
+                @Model.Libro.CodigoLibro
+            </dd>
+            <dt class="col-sm-3">Titulo</dt>
+            <dd class="col-sm-9">
+                @Model.Libro.Titulo
+            </dd>
+            <dt class="col-sm-3">Editora</dt>
+            <dd class="col-sm-9">
+                @Model.Libro.Editora
+            </dd>
+            <dt class="col-sm-3">Ciencia</dt>
+            <dd class="col-sm-9">
+                @Model.Libro.Ciencia
+            </dd>
+            <dt class="col-sm-3">Año Publicacion</dt>
+            <dd class="col-sm-9">
+                @Model.Libro.AnioPublicacion
+            </dd>
+            <dt class="col-sm-3">Signatura Topografica</dt>
+            <dd class="col-sm-9">
+                @Model.Libro.SignaturaTopografica
+            </dd>
+            <dt class="col-sm-3">Isbn</dt>
+            <dd class="col-sm-9">
+                @Model.Libro.Isbn
+            </dd>
+        </dl>
+        <hr />
+        <form asp-action="DevolverLibro" method="post">
+            <input type="hidden" value="@Model.CodigoPrestamo" />
+        <h4>Informacion de prestamo</h4>
+        <dl class="row">
+            <dt class="col-sm-2">Codigo Préstamo</dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CodigoPrestamo)
+            </dd>
+            <dt class="col-sm-2">Fecha creacion prestamo</dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FechaPrestamo)
+            </dd>
+            <dt class="col-sm-2">Limite de devolucion</dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FechaDevolucionEsperada)
+            </dd>
+            <dt class="col-sm-2">Monto diario</dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.MontoDia)
+            </dd>
+            <dt class="col-sm-2">Monto diario por retraso</dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.MontoDiaRetraso)
+            </dd>
+            <dt class="col-sm-2">Cantidad de dias</dt>
+            <dd class="col-sm-10">
+                @ViewBag.CantidadDias
+            </dd>
+            @if (ViewBag.CantidadDiasRetraso != null && ViewBag.CantidadDiasRetraso != 0)
+            {
+                <dt class="col-sm-2">Dias de retraso</dt>
+                <dd class="col-sm-10">
+                    @ViewBag.CantidadDiasRetraso
+                </dd>
+            }
+            <dt class="col-sm-2">Monto por prestamo</dt>
+            <dd class="col-sm-10">
+                @ViewBag.TotalDias
+            </dd>
+            @if (ViewBag.TotalDiasRetraso != null && ViewBag.TotalDiasRetraso != 0)
+            {
+                <dt class="col-sm-2">Monto por retraso</dt>
+                <dd class="col-sm-10">
+                    @ViewBag.TotalDiasRetraso
+                </dd>
+            }
+            <dt class="col-sm-2">Total a pagar</dt>
+            <dd class="col-sm-10">
+                @ViewBag.Total
+            </dd>
+            <div class="form-floating col-6">
+                <textarea asp-for="Comentario" name="comentario" class="form-control"></textarea>
+                <label asp-for="Comentario">Comentario</label>
+            </div>
+        </dl>
+        <div class="form-group d-flex mt-3">
+            <a asp-action="Index" class="btn btn-danger">Cancelar</a>
+            <button class="btn btn-primary ms-2" type="submit">Devolver y Guardar</button>
+        </div>
+        </form>
+    </div>
+
+}
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

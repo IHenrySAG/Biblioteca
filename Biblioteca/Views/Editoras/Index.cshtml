@@ -1,13 +1,19 @@
 @model IEnumerable<Biblioteca.Model.Editora>
+@using Biblioteca.Common
 
 @{
     ViewData["Title"] = "Lista de Editoras";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <a class="btn btn-success align-self-end" asp-action="Create">Nueva Editora</a>
-    <h1>Lista de editoras</h1>
-    <div></div>
+    <a class="btn btn-success align-self-end" asp-action="Crear">Nueva Editora</a>
+    <h2>Lista de editoras</h2>
+    <div>
+        <form class="d-flex" role="search" method="get">
+            <input name="filtro" class="form-control me-2" type="search" value="@ViewBag.Filtro" placeholder="Buscar por nombre o descripcion" aria-label="Search" />
+            <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+    </div>
 </div>
 
 <table class="table table-striped">
@@ -27,15 +33,16 @@
                     @Html.DisplayFor(modelItem => item.CodigoEditora)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.NombreEditora)
+                    @item.NombreEditora?.ToMaxLength(25)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Descripcion)
+                    @item.Descripcion?.ToMaxLength(40)
                 </td>
                 <td>
-                    <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.CodigoEditora">Edit</a>
-                    <a class="btn btn-danger ms-2" asp-action="Delete" asp-route-id="@item.CodigoEditora">Delete</a>
-                    <a class="btn btn-info ms-2 text-white" asp-action="Details" asp-route-id="@item.CodigoEditora">Details</a>
+                    <a class="btn btn-info text-white" asp-action="Detalles" asp-route-id="@item.CodigoEditora">Detalles</a>
+                    <a class="btn btn-warning ms-2 text-white" asp-action="Editar" asp-route-id="@item.CodigoEditora">Editar</a>
+                    <a class="btn btn-danger ms-2" asp-action="Eliminar" asp-route-id="@item.CodigoEditora">Eliminar</a>
+                    <a class="btn btn-secondary ms-2" href="Editoras/@item.CodigoEditora/Libros">Ver Libros</a>
                 </td>
             </tr>
         }

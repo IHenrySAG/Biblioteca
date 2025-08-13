@@ -1,0 +1,31 @@
+@model Biblioteca.Model.Idioma
+
+@{
+    ViewData["Title"] = "Detalles " + Model.NombreIdioma;
+}
+
+<div>
+    <h3>Detalles de @Model.NombreIdioma</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Codigo Idioma</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CodigoIdioma)
+        </dd>
+        <dt class="col-sm-2">Nombre</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NombreIdioma)
+        </dd>
+        @if (Model.Libros != null && Model.Libros.Count > 0)
+        {
+            <dt class="col-sm-2">Libros</dt>
+            <dd class="col-sm-10">
+                <a href="/Idiomas/@Model.CodigoIdioma/Libros" class="btn btn-info text-white">Ver lista de libros</a>
+            </dd>
+        }
+    </dl>
+    <div class="form-group d-flex mt-3">
+        <a asp-action="Editar" class="btn btn-warning text-white" asp-route-id="@Model.CodigoIdioma">Editar</a>
+        <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
+    </div>
+</div>

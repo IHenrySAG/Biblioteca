@@ -7,12 +7,15 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class AutorServicio(ContextoBiblioteca context) : ServicioBase<Autor>(context)
 {
-    public override async Task<IEnumerable<Autor>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Autor>> ObtenerTodosAsync(string? filtro)
     {
         return await context.Autores
-            .Where(x => !(x.Eliminado ?? false))
+            .AsNoTrackingWithIdentityResolution()
             .Include(a => a.Idioma)
-            .Include(a => a.LibrosAutores)
+            .Where(x => !(x.Eliminado ?? false))
+            .Where(string.IsNullOrEmpty(filtro) ?
+                e => true :
+                e => e.NombreAutor.Contains(filtro) || (e.PaisOrigen ?? "").Contains(filtro) || (e.Idioma.NombreIdioma ?? "").Contains(filtro))
             .ToListAsync();
     }
 

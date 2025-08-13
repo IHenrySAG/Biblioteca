@@ -8,7 +8,7 @@
 
     @if (ViewBag.EditarLibros)
     {
-        <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Libro</a>
+        <a class="btn btn-success align-self-end" asp-action="Crear">Nuevo Libro</a>
     }
     <h1>Buscar libros</h1>
     <div>
@@ -61,9 +61,9 @@
                     @Html.DisplayFor(modelItem => item.Isbn)
                 </td>
             <td>
-                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoLibro">Ver detalles</a>
-                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoLibro">Edit</a>
-                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoLibro">Delete</a>
+                    <a class="btn btn-success" asp-action="Detalles" asp-route-id="@item.CodigoLibro">Ver detalles</a>
+                    <a class="btn btn-warning text-white ms-1" asp-action="Editar" asp-route-id="@item.CodigoLibro">Editar</a>
+                    <a class="btn btn-danger ms-1" asp-action="Eliminar" asp-route-id="@item.CodigoLibro">Eliminar</a>
             </td>
         </tr>
 }

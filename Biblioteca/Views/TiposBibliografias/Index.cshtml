@@ -5,7 +5,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Tipo de Bibliografía</a>
+    <a class="btn btn-success align-self-end" asp-action="Crear">Nuevo Tipo de Bibliografía</a>
     <h1>Lista de tipos de bibliografía</h1>
     <div></div>
 </div>
@@ -27,9 +27,9 @@
                 <td>@Html.DisplayFor(modelItem => item.NombreBibliografia)</td>
                 <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
                 <td>
-                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoBibliografia">Ver detalles</a>
-                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoBibliografia">Edit</a>
-                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoBibliografia">Delete</a>
+                    <a class="btn btn-success" asp-action="Detalles" asp-route-id="@item.CodigoBibliografia">Ver detalles</a>
+                    <a class="btn btn-warning text-white ms-1" asp-action="Editar" asp-route-id="@item.CodigoBibliografia">Editar</a>
+                    <a class="btn btn-danger ms-1" asp-action="Eliminar" asp-route-id="@item.CodigoBibliografia">Eliminar</a>
                 </td>
             </tr>
         }

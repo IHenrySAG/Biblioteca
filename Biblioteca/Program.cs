@@ -71,6 +71,9 @@ app.UseSession();
 
 //app.MapRazorPages();
 
+// Manejo de errores 404 y otros
+app.UseStatusCodePagesWithReExecute("/Error{0}");
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
@@ -83,6 +86,7 @@ using(var scope = app.Services.CreateScope())
     var serviceProvider = scope.ServiceProvider;
     await SeedDatabase.SeedAdmin(serviceProvider);
 }
+
 
 
 app.Run();

@@ -7,10 +7,14 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class EstudiantesServicio(ContextoBiblioteca context) : ServicioBase<Estudiante>(context)
 {
-    public override async Task<IEnumerable<Estudiante>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Estudiante>> ObtenerTodosAsync(string? filtro)
     {
         return await context.Estudiantes
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => !(x.Eliminado ?? false))
+            .Where(string.IsNullOrEmpty(filtro) ?
+                e => true :
+                e => e.Nombre.Contains(filtro) || e.Apellido.Contains(filtro) || e.Cedula.Contains(filtro) || e.NumeroCarnet.Contains(filtro) || (e.TipoPersona != null && e.TipoPersona.NombreTipo.Contains(filtro)))
             .Include(u => u.TipoPersona)
             .Include(u => u.Prestamos)
             .ToListAsync();

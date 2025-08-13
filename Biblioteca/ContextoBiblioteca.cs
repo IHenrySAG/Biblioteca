@@ -187,11 +187,11 @@ public class ContextoBiblioteca: DbContext
             builder.Property(e => e.CodigoEmpleado).HasColumnName("CODIGO_EMPLEADO");
             builder.Property(e => e.Nombre).HasColumnName("NOMBRE").HasMaxLength(80).IsRequired();
             builder.Property(e => e.Apellido).HasColumnName("APELLIDO").HasMaxLength(80).IsRequired();
-            builder.Property(e => e.Cedula).HasColumnName("CEDULA").HasMaxLength(11).IsRequired();
+            builder.Property(e => e.Cedula).HasColumnName("CEDULA").HasMaxLength(13).IsRequired();
             builder.Property(e => e.CodigoTanda).HasColumnName("CODIGO_TANDA").IsRequired();
             builder.Property(e => e.PorcentajeComision).HasColumnName("PORCENTAJE_COMISION");
             builder.Property(e => e.FechaIngreso).HasColumnName("FECHA_INGRESO");
-            builder.Property(e => e.NombreUsuario).HasColumnName("NOMBRE_USUARIO");
+            builder.Property(e => e.NombreUsuario).HasColumnName("NOMBRE_USUARIO").HasMaxLength(30);
             builder.Property(e => e.Contrasenia).HasColumnName("CONTRASENIA");
             builder.Property(e => e.CodigoRol).HasColumnName("CODIGO_ROL");
             builder.Property(e => e.Eliminado).HasColumnName("ELIMINADO");
@@ -219,7 +219,7 @@ public class ContextoBiblioteca: DbContext
             builder.ToTable("TANDA_LABOR");
             builder.HasKey(t => t.CodigoTanda);
             builder.Property(t => t.CodigoTanda).HasColumnName("CODIGO_TANDA");
-            builder.Property(t => t.NombreTanda).HasColumnName("NOMBRE_TANDA").HasMaxLength(50); // Ajusta el tamaño si es necesario
+            builder.Property(t => t.NombreTanda).HasColumnName("NOMBRE_TANDA").HasMaxLength(30); // Ajusta el tamaño si es necesario
             builder.Property(t => t.HoraInicio).HasColumnName("HORA_INICIO").IsRequired();
             builder.Property(t => t.HoraFin).HasColumnName("HORA_FIN").IsRequired();
             builder.Property(t => t.Eliminado).HasColumnName("ELIMINADO");
@@ -243,7 +243,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(u => u.CodigoEstudiante).HasColumnName("CODIGO_ESTUDIANTE");
             builder.Property(u => u.Nombre).HasColumnName("NOMBRE").HasMaxLength(80).IsRequired();
             builder.Property(u => u.Apellido).HasColumnName("APELLIDO").HasMaxLength(80).IsRequired();
-            builder.Property(u => u.Cedula).HasColumnName("CEDULA").HasMaxLength(11).IsRequired();
+            builder.Property(u => u.Cedula).HasColumnName("CEDULA").HasMaxLength(13).IsRequired();
             builder.Property(u => u.NumeroCarnet).HasColumnName("NUMERO_CARNET").HasMaxLength(10).IsRequired();
             builder.Property(u => u.CodigoTipo).HasColumnName("CODIGO_TIPO").IsRequired();
             builder.Property(u => u.Eliminado).HasColumnName("ELIMINADO");

@@ -19,11 +19,11 @@ public class Empleado:EntidadBase
     public double? PorcentajeComision { get; set; }
     public DateOnly? FechaIngreso { get; set; }
     public string NombreUsuario { get; set; } = null!;
-    public string Contrasenia { get; set; } = null!;
+    public string? Contrasenia { get; set; } = null!;
 
     //Esta propiedad no sera persistida en la base de datos
     [NotMapped]
-    public string RepetirContrasenia { get; set; } = null!;
+    public string? RepetirContrasenia { get; set; } = null!;
     public int CodigoRol { get; set; }
 
     public TandaLabor? TandaLabor { get; set; }

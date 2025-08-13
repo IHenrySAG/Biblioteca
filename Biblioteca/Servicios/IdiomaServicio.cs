@@ -7,12 +7,16 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class IdiomaServicio(ContextoBiblioteca context) : ServicioBase<Idioma>(context)
 {
-    public override async Task<IEnumerable<Idioma>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<Idioma>> ObtenerTodosAsync(string filtro=null)
     {
         return await context.Idiomas
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => !(x.Eliminado ?? false))
             .Include(i => i.Libros)
             .Include(i => i.Autores)
+            .Where(string.IsNullOrEmpty(filtro) ?
+                e => true :
+                e => e.NombreIdioma.Contains(filtro))
             .ToListAsync();
     }
 

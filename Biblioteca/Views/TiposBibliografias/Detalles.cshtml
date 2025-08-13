@@ -1,0 +1,40 @@
+@model Biblioteca.Model.TipoBibliografia
+
+@{
+    ViewData["Title"] = "Detalles " + Model.NombreBibliografia;
+}
+
+<div>
+    <h3>Detalles de @Model.NombreBibliografia</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Codigo</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CodigoBibliografia)
+        </dd>
+        <dt class="col-sm-2">Nombre</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NombreBibliografia)
+        </dd>
+        <dt class="col-sm-2">Descripción</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+        @if (Model.LibrosBibliografias != null && Model.LibrosBibliografias.Count > 0)
+        {
+            <dt class="col-sm-2">Libros</dt>
+            <dd class="col-sm-10">
+                <ul>
+                    @foreach (var item in Model.LibrosBibliografias)
+                    {
+                        <li>@Html.DisplayFor(modelItem => item.Libro.Titulo)</li>
+                    }
+                </ul>
+            </dd>
+        }
+    </dl>
+    <div class="form-group d-flex mt-3">
+        <a asp-action="Editar" class="btn btn-success" asp-route-id="@Model.CodigoBibliografia">Editar</a>
+        <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a>
+    </div>
+</div>

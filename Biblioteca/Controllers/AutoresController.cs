@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Biblioteca.Model;
 using Biblioteca.Servicios;
 using Biblioteca.Common;
+using Biblioteca.Model.ViewModel;
 
 namespace Biblioteca.Controllers
 {
@@ -11,18 +12,58 @@ namespace Biblioteca.Controllers
     public class AutoresController(
         ContextoBiblioteca context,
         AutorServicio service,
+        LibroServicio libroServicio,
         ServicioBase<Idioma> servicioIdioma
     ) : Controller
     {
         // GET: Autores
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? filtro)
         {
-            var autores = await service.ObtenerTodosAsync();
+            var autores = await service.ObtenerTodosAsync(filtro);
+
+            ViewBag.Filtro = filtro;
             return View(autores);
         }
 
-        // GET: Autores/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet("Autores/{id}/Libros")]
+        public async Task<IActionResult> LibrosPorAutor([FromRoute] int id, [FromQuery] string? filtro)
+        {
+            if (id <= 0)
+                return NotFound();
+
+            var autor = await service.ObtenerPorIdAsync(id);
+
+            if (autor == null)
+                return NotFound();
+
+            var libros = (await libroServicio.ObtenerPorIdAutorAsync(id, filtro))
+                .Select(l => new LibroVM
+                {
+                    CodigoLibro = l.CodigoLibro,
+                    Titulo = l.Titulo,
+                    SignaturaTopografica = l.SignaturaTopografica,
+                    Isbn = l.Isbn,
+                    AnioPublicacion = l.AnioPublicacion,
+                    Ciencia = l.Ciencia,
+                    Inventario = l.Inventario,
+                    Idioma = l.Idioma.NombreIdioma,
+                    Editora = l.Editora.NombreEditora
+                }).ToList();
+
+            if (libros == null || libros.Count == 0)
+            {
+                ViewBag.Mensaje = "No se encontraron libros para este Autor.";
+            }
+
+            ViewBag.Autor = autor.NombreAutor;
+            ViewBag.CodigoAutor = autor.CodigoAutor;
+            ViewBag.Filtro = filtro;
+
+            return View(libros);
+        }
+
+        // GET: Autores/Detalles/5
+        public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null)
             {
@@ -39,22 +80,22 @@ namespace Biblioteca.Controllers
             return View(autor);
         }
 
-        // GET: Autores/Create
-        public async Task<IActionResult> Create()
+        // GET: Autores/Crear
+        public async Task<IActionResult> Crear()
         {
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "CreateAutor" });
+                ViewBag.ErrorIdiomas = "No hay idiomas registrados. Por favor, registre al menos un idioma antes de registrar un autor.";
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             return View();
         }
 
-        // POST: Autores/Create
+        // POST: Autores/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoAutor,NombreAutor,CodigoIdioma,PaisOrigen,Estado")] Autor autor)
+        public async Task<IActionResult> Crear([Bind("CodigoAutor,NombreAutor,CodigoIdioma,PaisOrigen,Estado")] Autor autor)
         {
             if (ModelState.IsValid)
             {
@@ -65,14 +106,14 @@ namespace Biblioteca.Controllers
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "CreateAutor" });
+                return RedirectToAction("Crear", "Idiomas", new { RedirectedFrom = "CreateAutor" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             return View(autor);
         }
 
-        // GET: Autores/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Autores/Editar/5
+        public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -84,16 +125,16 @@ namespace Biblioteca.Controllers
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "EditAutor" });
+                return RedirectToAction("Crear", "Idiomas", new { RedirectedFrom = "EditAutor" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             return View(autor);
         }
 
-        // POST: Autores/Edit/5
+        // POST: Autores/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoAutor,NombreAutor,CodigoIdioma,PaisOrigen,Estado")] Autor autor)
+        public async Task<IActionResult> Editar(int id, [Bind("CodigoAutor,NombreAutor,CodigoIdioma,PaisOrigen,Estado")] Autor autor)
         {
             if (id != autor.CodigoAutor)
                 return NotFound();
@@ -117,14 +158,14 @@ namespace Biblioteca.Controllers
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Create", "Idiomas", new { RedirectedFrom = "EditAutor" });
+                return RedirectToAction("Crear", "Idiomas", new { RedirectedFrom = "EditAutor" });
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             return View(autor);
         }
 
-        // GET: Autores/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Autores/Eliminar/5
+        public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -136,9 +177,9 @@ namespace Biblioteca.Controllers
             return View(autor);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ConfirmarEliminar(int id)
         {
             await service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));

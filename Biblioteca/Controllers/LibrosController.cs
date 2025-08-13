@@ -10,17 +10,19 @@ using Biblioteca.Servicios;
 using Biblioteca.Common;
 using Biblioteca.Model.DTOs;
 using Biblioteca.Model.ViewModel;
+using System.Text;
+using System.IO;
 
 
 namespace Biblioteca.Controllers
 {
     [Authorization(nameof(ERoles.ADMIN), nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
-    public class LibrosController(ContextoBiblioteca context, LibroServicio service, ServicioBase<Idioma> servicioIdioma, ServicioBase<Editora> servicioEditoras, ServicioBase<Autor> servicioAutores, ServicioBase<TipoBibliografia> servicioBibliografia) : Controller
+    public class LibrosController(ContextoBiblioteca context, LibroServicio service, ServicioBase<Idioma> servicioIdioma, ServicioBase<Editora> servicioEditoras, ServicioBase<Autor> servicioAutores, ServicioBase<TipoBibliografia> servicioBibliografia, PrestamoServicio prestamoServicio) : Controller
     {
         // GET: Libros
         public async Task<IActionResult> Index(string? filtro)
         {
-            var libros =filtro is null? await service.ObtenerTodosAsync(): await service.ObtenerConFiltroAsync(filtro);
+            var libros =filtro is null? await service.ObtenerTodosAsync(): await service.ObtenerTodosAsync(filtro);
 
             ViewBag.Filtro = filtro;
 
@@ -44,8 +46,8 @@ namespace Biblioteca.Controllers
             return View(librosVM);
         }
 
-        // GET: Libros/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Libros/Detalles/5
+        public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null)
             {
@@ -62,8 +64,8 @@ namespace Biblioteca.Controllers
             return View(libro);
         }
 
-        // GET: Libros/Create
-        public async Task<IActionResult> Create()
+        // GET: Libros/Crear
+        public async Task<IActionResult> Crear()
         {
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
@@ -89,12 +91,12 @@ namespace Biblioteca.Controllers
             return View();
         }
 
-        // POST: Libros/Create
+        // POST: Libros/Crear
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoLibro,Titulo,SignaturaTopografica,Isbn,CodigoEditora,AnioPublicacion,Ciencia,CodigoIdioma")] Libro libro, int[] autores, List<TipoBibliografia> bibliografias)
+        public async Task<IActionResult> Crear(Libro libro, int[] autores, List<TipoBibliografia> bibliografias)
         {
             if (!ModelState.IsValid)
             {
@@ -131,8 +133,8 @@ namespace Biblioteca.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Libros/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Libros/Editar/5
+        public async Task<IActionResult> Editar(int? id)
         {
             if (id is null)
             {
@@ -148,24 +150,24 @@ namespace Biblioteca.Controllers
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Index", "Idiomas", new { RedirectedFrom = "CreateBook" });
+                return NotFound();
 
             var editoras = await servicioEditoras.ObtenerTodosAsync();
 
             if (!editoras.Any())
-                return RedirectToAction("Index", "Editoras", new { RedirectedFrom = "CreateBook" });
+                return NotFound();
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             ViewData["Editoras"] = new SelectList(editoras, "CodigoEditora", "NombreEditora");
             return View(libro);
         }
 
-        // POST: Libros/Edit/5
+        // POST: Libros/Editar/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoLibro,Titulo,SignaturaTopografica,Isbn,CodigoEditora,AnioPublicacion,Ciencia,CodigoIdioma,Inventario")] Libro libro, int[] autores, List<TipoBibliografia> bibliografias)
+        public async Task<IActionResult> Editar(int id, [Bind("CodigoLibro,Titulo,SignaturaTopografica,Isbn,CodigoEditora,AnioPublicacion,Ciencia,CodigoIdioma,Inventario")] Libro libro, int[] autores, List<TipoBibliografia> bibliografias)
         {
             if (id != libro.CodigoLibro)
             {
@@ -220,8 +222,8 @@ namespace Biblioteca.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Libros/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Libros/Eliminar/5
+        public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null)
             {
@@ -239,12 +241,48 @@ namespace Biblioteca.Controllers
         }
 
         // Fix for CS1503: Argument 1: cannot convert from 'Biblioteca.Model.Libro' to 'int'  
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ConfirmarEliminar(int id)
         {
             await service.EliminarAsync(id); // Pass the 'id' instead of 'libro'  
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Libros/Eliminar/5
+        [HttpGet("Libros/{idLibro}/Prestamos")]
+        public async Task<IActionResult> PrestamosPorLibro(int idLibro, string? filtro)
+        {
+            if (idLibro == null)
+            {
+                return NotFound();
+            }
+
+            var libro = await service.ObtenerPorIdAsync(idLibro);
+
+            if (libro == null)
+            {
+                return NotFound();
+            }
+
+            var prestamos = await prestamoServicio.ObtenerPorIdLibroAsync(idLibro, filtro);
+
+            var prestamosVM=prestamos.Select(x => new PrestamoVM
+            {
+                CodigoPrestamo = x.CodigoPrestamo,
+                Empleado = x.Empleado?.Nombre,
+                Estudiante = x.Estudiante?.Nombre+" "+x.Estudiante.Apellido,
+                Libro = x.Libro?.Titulo ?? string.Empty,
+                FechaPrestamo = x.FechaPrestamo,
+                FechaDevolucionEsperada = x.FechaDevolucionEsperada,
+                FechaDevolucion = x.FechaDevolucion,
+            }).ToList();
+
+            ViewBag.Title = "Prestamos del libro " + libro.Titulo;
+            ViewBag.CodigoLibro = libro.CodigoLibro;
+            ViewBag.Filtro = filtro;
+
+            return View(prestamosVM);
         }
 
         // GET: Libros/ExportarLibroCsv/5
@@ -272,20 +310,62 @@ namespace Biblioteca.Controllers
         {
             var libros = await service.ObtenerTodosAsync();
 
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine("Codigo Libro;Titulo;Signatura Topografica;Isbn;Codigo Editora;Anio Publicacion;Ciencia;Idioma");
+            var fileInfo = GenerarCsvLibros(libros);
+            return File(System.Text.Encoding.UTF8.GetBytes(fileInfo.Item1.ToString()), "text/csv", fileInfo.Item2);
+        }
 
-            foreach (var libro in libros)
+        public async Task<IActionResult> ExportarLibrosPorIdiomaCsv(int idIdioma)
+        {
+            if (idIdioma <= 0)
             {
-                sb.AppendLine($"{libro.CodigoLibro};\"{libro.Titulo}\";\"{libro.SignaturaTopografica}\";\"{libro.Isbn}\";{libro.CodigoEditora};{libro.AnioPublicacion};\"{libro.Ciencia}\";{libro.Idioma.NombreIdioma}");
+                return NotFound();
             }
-            var fileName = $"Lista_Libros_{DateTime.Now.Date:yyyy_MM_dd}";
-            foreach (var c in Path.GetInvalidFileNameChars())
+            var idioma = await servicioIdioma.ObtenerPorIdAsync(idIdioma);
+            if (idioma == null)
             {
-                fileName = fileName.Replace(c, '-');
+                return NotFound();
             }
-            fileName += ".csv";
-            return File(System.Text.Encoding.UTF8.GetBytes(sb.ToString()), "text/csv", fileName);
+
+            var libros = await service.ObtenerPorIdIdiomaAsync(idIdioma, null);
+
+            var fileInfo = GenerarCsvLibros(libros, idioma.NombreIdioma);
+            return File(System.Text.Encoding.UTF8.GetBytes(fileInfo.Item1.ToString()), "text/csv", fileInfo.Item2);
+        }
+
+        public async Task<IActionResult> ExportarLibrosPorEditoraCsv(int idEditora)
+        {
+            if (idEditora <= 0)
+            {
+                return NotFound();
+            }
+            var editora = await servicioEditoras.ObtenerPorIdAsync(idEditora);
+            if (editora == null)
+            {
+                return NotFound();
+            }
+
+            var libros = await service.ObtenerPorIdEditoraAsync(idEditora, null);
+
+            var fileInfo = GenerarCsvLibros(libros, editora.NombreEditora);
+            return File(System.Text.Encoding.UTF8.GetBytes(fileInfo.Item1.ToString()), "text/csv", fileInfo.Item2);
+        }
+
+        public async Task<IActionResult> ExportarLibrosPorAutorCsv(int idAutor)
+        {
+            if (idAutor <= 0)
+            {
+                return NotFound();
+            }
+            var autor = await servicioAutores.ObtenerPorIdAsync(idAutor);
+            if (autor == null)
+            {
+                return NotFound();
+            }
+
+            var libros = await service.ObtenerPorIdAutorAsync(idAutor, null);
+
+            var fileInfo = GenerarCsvLibros(libros, autor.NombreAutor);
+            return File(System.Text.Encoding.UTF8.GetBytes(fileInfo.Item1.ToString()), "text/csv", fileInfo.Item2);
         }
 
         // GET: Libros/ExportarLibroXml/5
@@ -361,7 +441,7 @@ namespace Biblioteca.Controllers
         [HttpGet]
         public async Task<JsonResult> BuscarLibroJson(string filtro)
         {
-            var libros = await service.ObtenerConFiltroAsync(filtro);
+            var libros = await service.ObtenerTodosAsync(filtro);
 
             var librosVM = libros.Select(x => new LibroVM
             {
@@ -377,6 +457,23 @@ namespace Biblioteca.Controllers
                 Inventario = x.Inventario
             });
             return Json(librosVM);
+        }
+
+        private static (StringBuilder, string) GenerarCsvLibros(IEnumerable<Libro> libros, string titulo=null)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Codigo Libro;Titulo;Autor;Editora;Anio Publicacion;Ciencia;Idioma;Signatura Topografica;Isbn;");
+            foreach (var libro in libros)
+            {
+                sb.AppendLine($"{libro.CodigoLibro};\"{libro.Titulo}\";\"{libro.LibrosAutores?.First().Autor?.NombreAutor??""}\";\"{libro.Editora.NombreEditora}\";{libro.AnioPublicacion};\"{libro.Ciencia}\";{libro.Idioma.NombreIdioma};\"{libro.SignaturaTopografica}\";\"{libro.Isbn}\"");
+            }
+            var fileName = $"Lista_Libros{(!string.IsNullOrEmpty(titulo) ? "_" + titulo : "")}_{DateTime.Now.Date:yyyy_MM_dd}";
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(c, '-');
+            }
+            fileName += ".csv";
+            return (sb, fileName);
         }
 
         private bool LibroExists(int id)

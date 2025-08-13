@@ -7,11 +7,15 @@ using Biblioteca.Model;
 namespace Biblioteca.Servicios;
 public class TipoBibliografiaServicio(ContextoBiblioteca context) : ServicioBase<TipoBibliografia>(context)
 {
-    public override async Task<IEnumerable<TipoBibliografia>> ObtenerTodosAsync()
+    public override async Task<IEnumerable<TipoBibliografia>> ObtenerTodosAsync(string filtro=null)
     {
         return await context.TiposBibliografias
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => !(x.Eliminado ?? false))
             .Include(tb => tb.LibrosBibliografias)
+            .Where(string.IsNullOrEmpty(filtro) ?
+                tb => true :
+                tb => tb.NombreBibliografia.Contains(filtro))
             .ToListAsync();
     }
 

@@ -1,13 +1,19 @@
 @model IEnumerable<Biblioteca.Model.Autor>
+@using Biblioteca.Common
 
 @{
     ViewData["Title"] = "Lista de Autores";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <a class="btn btn-success align-self-end" asp-action="Create">Nuevo Autor</a>
-    <h1>Lista de autores</h1>
-    <div></div>
+    <a class="btn btn-success align-self-end" asp-action="Crear">Nuevo Autor</a>
+    <h2>Lista de autores</h2>
+    <div>
+        <form class="d-flex" role="search" method="get">
+            <input name="filtro" class="form-control me-2" type="search" value="@ViewBag.Filtro" placeholder="Buscar Autor" aria-label="Search" />
+            <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+    </div>
 </div>
 
 <table class="table table-striped">
@@ -28,18 +34,19 @@
                     @Html.DisplayFor(modelItem => item.CodigoAutor)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.NombreAutor)
+                    @item.NombreAutor?.ToMaxLength(45)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PaisOrigen)
+                    @item.PaisOrigen?.ToMaxLength(25)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Idioma.NombreIdioma)
                 </td>
                 <td>
-                    <a class="btn btn-success" asp-action="Details" asp-route-id="@item.CodigoAutor">Ver detalles</a>
-                    <a class="btn btn-warning text-white ms-1" asp-action="Edit" asp-route-id="@item.CodigoAutor">Edit</a>
-                    <a class="btn btn-danger ms-1" asp-action="Delete" asp-route-id="@item.CodigoAutor">Delete</a>
+                    <a class="btn btn-info text-white" asp-action="Detalles" asp-route-id="@item.CodigoAutor">Detalles</a>
+                    <a class="btn btn-warning ms-2 text-white" asp-action="Editar" asp-route-id="@item.CodigoAutor">Editar</a>
+                    <a class="btn btn-danger ms-2" asp-action="Eliminar" asp-route-id="@item.CodigoAutor">Eliminar</a>
+                    <a class="btn btn-secondary ms-2" href="Autores/@item.CodigoAutor/Libros">Ver Libros</a>
                 </td>
             </tr>
         }

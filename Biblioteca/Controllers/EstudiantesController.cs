@@ -12,18 +12,19 @@ namespace Biblioteca.Controllers
     public class EstudiantesController(
         ContextoBiblioteca context,
         EstudiantesServicio service,
+        PrestamoServicio prestamoServicio,
         ServicioBase<TipoPersona> servicioTipoPersona
     ) : Controller
     {
         // GET: Usuarios
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? filtro)
         {
-            var usuarios = await service.ObtenerTodosAsync();
+            var usuarios = await service.ObtenerTodosAsync(filtro);
             return View(usuarios);
         }
 
-        // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Usuarios/Detalles/5
+        public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -33,43 +34,40 @@ namespace Biblioteca.Controllers
             if (usuario == null)
                 return NotFound();
 
+            usuario.Cedula = usuario.Cedula;
+
             return View(usuario);
         }
 
-        // GET: Usuarios/Create
-        public async Task<IActionResult> Create()
+        // GET: Usuarios/Crear
+        public async Task<IActionResult> Crear()
         {
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
-
-            if (!tipos.Any())
-                return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "CreateUsuario" });
 
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");
             return View();
         }
 
-        // POST: Usuarios/Create
+        // POST: Usuarios/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodigoUsuario,Nombre,Apellido,Cedula,NumeroCarnet,CodigoTipo,Estado")] Estudiante usuario)
+        public async Task<IActionResult> Crear(Estudiante estudiante)
         {
             if (ModelState.IsValid)
             {
-                await service.AgregarAsync(usuario);
+                estudiante.Cedula = estudiante.Cedula.Trim().Replace("-","");
+                await service.AgregarAsync(estudiante);
                 return RedirectToAction(nameof(Index));
             }
 
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
 
-            if (!tipos.Any())
-                return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "CreateUsuario" });
-
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");
-            return View(usuario);
+            return View(estudiante);
         }
 
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Usuarios/Editar/5
+        public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -80,17 +78,14 @@ namespace Biblioteca.Controllers
 
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
 
-            if (!tipos.Any())
-                return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "EditUsuario" });
-
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");
             return View(usuario);
         }
 
-        // POST: Usuarios/Edit/5
+        // POST: Usuarios/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CodigoUsuario,Nombre,Apellido,Cedula,NumeroCarnet,CodigoTipo,Estado")] Estudiante usuario)
+        public async Task<IActionResult> Editar(int id, Estudiante usuario)
         {
             if (id != usuario.CodigoEstudiante)
                 return NotFound();
@@ -113,15 +108,12 @@ namespace Biblioteca.Controllers
 
             var tipos = await servicioTipoPersona.ObtenerTodosAsync();
 
-            if (!tipos.Any())
-                return RedirectToAction("Create", "TipoPersonas", new { RedirectedFrom = "EditUsuario" });
-
             ViewData["TiposPersonas"] = new SelectList(tipos, "CodigoTipo", "NombreTipo");
             return View(usuario);
         }
 
-        // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Usuarios/Eliminar/5
+        public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null)
                 return NotFound();
@@ -133,12 +125,44 @@ namespace Biblioteca.Controllers
             return View(usuario);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ConfirmarEliminar(int id)
         {
             await service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet("Estudiantes/{id}/Prestamos")]
+        public async Task<IActionResult> PrestamosPorEstudiante(int? id, string? filtro)
+        {
+            if (id == null)
+                return NotFound();
+
+            var estudiante = await service.ObtenerPorIdAsync(id.Value);
+            if (estudiante == null)
+                return NotFound();
+
+            var prestamos = await prestamoServicio.ObtenerPorIdEstudianteAsync(estudiante.CodigoEstudiante, filtro);
+
+            var prestamosVM = prestamos
+                .OrderByDescending(p => p.FechaPrestamo)
+                .Select(p => new PrestamoVM
+                {
+                    CodigoPrestamo = p.CodigoPrestamo,
+                    FechaPrestamo = p.FechaPrestamo,
+                    FechaDevolucion = p.FechaDevolucion,
+                    FechaDevolucionEsperada = p.FechaDevolucionEsperada,
+                    Estudiante = p.Estudiante.Nombre,
+                    Libro = p.Libro.Titulo,
+                })
+                .ToList() ?? new List<PrestamoVM>();
+
+            ViewBag.Title = "Prestamos del estudiante " + estudiante.NumeroCarnet;
+            ViewBag.CodigoEstudiante = estudiante.CodigoEstudiante;
+            ViewBag.Filtro = filtro;
+
+            return View(prestamosVM);
         }
 
         [HttpGet]
@@ -159,12 +183,21 @@ namespace Biblioteca.Controllers
                 Apellido = estudiante.Apellido,
                 Cedula = estudiante.Cedula,
                 NumeroCarnet = estudiante.NumeroCarnet,
-                CodigoTipo = estudiante.CodigoTipo,
-                PrestamoActivo = estudiante.Prestamos
-                    .Where(p => !(p.Eliminado ?? false))
-                    .Select(p=>p.Libro)
-                    .FirstOrDefault() ?? null
+                CodigoTipo = estudiante.CodigoTipo
             };
+
+            var prestamosActivos = estudiante.Prestamos
+                .Where(p => !(p.Eliminado ?? false))
+                .Where(p => p.FechaDevolucion == null)
+                .ToList();
+
+            var prestamoVencido = prestamosActivos
+                .Any(p => p.FechaDevolucionEsperada < DateOnly.FromDateTime(DateTime.Now));
+
+            estudianteVM.PuedeTomarPrestamos = prestamosActivos.Count < 3 && !prestamoVencido;
+            estudianteVM.ErrorPrestamo = prestamoVencido
+                ? "El estudiante tiene un préstamo vencido. No puede tomar más préstamos hasta que se resuelva."
+                : "El estudiante ha alcanzado el límite de 3 préstamos activos.";
 
             return Json(estudianteVM);
         }
@@ -180,6 +213,8 @@ namespace Biblioteca.Controllers
                 return Json(null);
             }
 
+
+
             var estudianteVM = new EstudianteVM
             {
                 CodigoEstudiante = estudiante.CodigoEstudiante,
@@ -187,12 +222,21 @@ namespace Biblioteca.Controllers
                 Apellido = estudiante.Apellido,
                 Cedula = estudiante.Cedula,
                 NumeroCarnet = estudiante.NumeroCarnet,
-                CodigoTipo = estudiante.CodigoTipo,
-                PrestamoActivo = estudiante.Prestamos
-                    .Where(p => !(p.Eliminado ?? false))
-                    .Select(p => p.Libro)
-                    .FirstOrDefault() ?? null
+                CodigoTipo = estudiante.CodigoTipo
             };
+
+            var prestamosActivos = estudiante.Prestamos
+                .Where(p => !(p.Eliminado ?? false))
+                .Where(p => p.FechaDevolucion == null)
+                .ToList();
+
+            var prestamoVencido = prestamosActivos
+                .Any(p => p.FechaDevolucionEsperada < DateOnly.FromDateTime(DateTime.Now));
+
+            estudianteVM.PuedeTomarPrestamos = prestamosActivos.Count < 3 && !prestamoVencido;
+            estudianteVM.ErrorPrestamo = prestamoVencido
+                ? "El estudiante tiene un préstamo vencido. No puede tomar más préstamos hasta que se resuelva."
+                : "El estudiante ha alcanzado el límite de 3 préstamos activos.";
 
             return Json(estudianteVM);
         }

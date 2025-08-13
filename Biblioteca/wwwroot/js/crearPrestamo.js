@@ -46,21 +46,14 @@ formSeleccionarEstudiante.addEventListener('submit', async function (evt) {
             <dd class="col-sm-9">
                 ${estudiante.apellido}
             </dd>
-            ${(estudiante.prestamoActivo === null ? ''
-            : `
-                <dt class="col-sm-3 text-danger">Prestamo activo</dt>
-                <dd class="col-sm-9  text-danger">
-                    ${estudiante.prestamoActivo.titulo} - ${estudiante.prestamoActivo.ciencia} - ${estudiante.prestamoActivo.anioPublicacion}
-                </dd>
-            `)}
-        </dl>
-        ${(estudiante.prestamoActivo !== null ? '': `
-                <div class="row">
+            ${(estudiante.puedeTomarPrestamos
+            ? `<div class="row">
                     <div class="col-2">
                         <button class="btn btn-outline-primary" onclick="seleccionarEstudiante()">Seleccionar</button>
                     </div>
-                </div>
-            `)}`
+                </div>`
+            : `<h5 class="col text-danger">${estudiante.errorPrestamo}</h5>`)}
+        </dl>`
         )
 })
 

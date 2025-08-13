@@ -114,7 +114,7 @@ create table ESTUDIANTES(
 	CODIGO_ESTUDIANTE int not null primary key identity(1,1),
 	NOMBRE varchar(80) not null,
 	APELLIDO varchar(80) not null,
-	CEDULA varchar(11) not null,
+	CEDULA varchar(13) not null,
 	NUMERO_CARNET varchar(10) not null,
 	CODIGO_TIPO int not null,
 	ELIMINADO bit null
@@ -156,7 +156,7 @@ create table EMPLEADOS(
 	CODIGO_EMPLEADO int not null primary key identity(1,1),
 	NOMBRE varchar(80) not null,
 	APELLIDO varchar(80) not null,
-	CEDULA varchar(11) not null,
+	CEDULA varchar(13) not null,
 	CODIGO_TANDA int not null,
 	PORCENTAJE_COMISION float null,
 	FECHA_INGRESO date null,

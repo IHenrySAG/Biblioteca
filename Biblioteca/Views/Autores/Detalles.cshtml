@@ -1,0 +1,39 @@
+@model Biblioteca.Model.Autor
+
+@{
+    ViewData["Title"] = "Detalles " + Model.NombreAutor;
+}
+
+<div>
+    <h3>Detalles de @Model.NombreAutor</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Codigo Autor</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CodigoAutor)
+        </dd>
+        <dt class="col-sm-2">Nombre</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NombreAutor)
+        </dd>
+        <dt class="col-sm-2">País de Origen</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PaisOrigen)
+        </dd>
+        <dt class="col-sm-2">Idioma</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Idioma.NombreIdioma)
+        </dd>
+        @if (Model.LibrosAutores != null && Model.LibrosAutores.Count > 0)
+        {
+            <dt class="col-sm-2">Libros</dt>
+            <dd class="col-sm-10">
+                <a class="btn btn-info text-white" href="/Autores/@Model.CodigoAutor/Libros">Ver Libros</a>
+            </dd>
+        }
+    </dl>
+    <div class="form-group d-flex mt-3">
+        <a asp-action="Editar" class="btn btn-warning text-white" asp-route-id="@Model.CodigoAutor">Editar</a>
+        <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
+    </div>
+</div>

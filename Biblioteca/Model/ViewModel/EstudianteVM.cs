@@ -14,5 +14,7 @@ public class EstudianteVM
     public string Cedula { get; set; } = null!;
     public string NumeroCarnet { get; set; } = null!;
     public int CodigoTipo { get; set; }
-    public Libro? PrestamoActivo { get; set; }
+    public bool PuedeTomarPrestamos { get; set; }
+    public string ErrorPrestamo { get; set; }
+
 }

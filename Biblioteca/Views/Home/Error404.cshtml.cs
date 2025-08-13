@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Biblioteca.Presentacion.Web.Views.Home
+namespace Biblioteca.Views.Home
 {
     public class Error404 : PageModel
     {
