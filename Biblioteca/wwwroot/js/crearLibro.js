@@ -139,58 +139,58 @@ function cargarListaAutores() {
     )
 }
 
-const formAgregarBibliografia = document.getElementById('frmAgregarBibliografia')
-formAgregarBibliografia.addEventListener('submit', function(evt) {
-    evt.preventDefault()
+//const formAgregarBibliografia = document.getElementById('frmAgregarBibliografia')
+//formAgregarBibliografia.addEventListener('submit', function(evt) {
+//    evt.preventDefault()
 
-    const nombreBibliografia = $('#txtNombreBibliografia').val()
-    const descripcion = $('#txtDescripcionBibliografia').val()
+//    const nombreBibliografia = $('#txtNombreBibliografia').val()
+//    const descripcion = $('#txtDescripcionBibliografia').val()
 
-    if (!nombreBibliografia) {
-        alert('La bibliografia debe tener al menos un nombre')
-        return
-    }
+//    if (!nombreBibliografia) {
+//        alert('La bibliografia debe tener al menos un nombre')
+//        return
+//    }
 
-    listaBibliografias.push({
-        nombreBibliografia,
-        descripcion
-    })
+//    listaBibliografias.push({
+//        nombreBibliografia,
+//        descripcion
+//    })
 
-    cargarListaBibliografias()
+//    cargarListaBibliografias()
 
-    $('#modalAgregarBibliografia').modal('toggle')
-})
+//    $('#modalAgregarBibliografia').modal('toggle')
+//})
 
-function cargarListaBibliografias() {
-    $('#bibliografias-container').html(listaBibliografias.map((bibliografia, index) =>
-        `
-        <div class="mb-3">
-            <div class="row mb-0">
-                <div class="col-10 mb-0">
-                    <div class="form-group mb-2">
-                        <label class="control-label">Nombre Bibliografia</label>
-                        <input class="form-control" type="text" name="bibliografias[${index}].NombreBibliografia" value="${bibliografia.nombreBibliografia}" maxlength="30" />
-                    </div>
-                </div>
-                <div class="col-2 d-flex align-items-end"> 
-                        <div class="form-group mb-2">
-                            <button class="btn btn-outline-primary" type="button" onclick="eliminarBibliografia(${index})">Eliminar</button>
-                    </div>
-                </div>
-            </div>
-            <div class="form-floating mb-2">
-                <textarea id="txtDescBibliografia${index}" class="form-control" name="bibliografias[${index}].Descripcion"  placeholder="Descripcion de la bibliografia">${bibliografia.descripcion}</textarea>
-                <label for="txtDescBibliografia${index}">Descripcion</label>
-            </div>
-        </div>
-        `
-    ))
-}
+//function cargarListaBibliografias() {
+//    $('#bibliografias-container').html(listaBibliografias.map((bibliografia, index) =>
+//        `
+//        <div class="mb-3">
+//            <div class="row mb-0">
+//                <div class="col-10 mb-0">
+//                    <div class="form-group mb-2">
+//                        <label class="control-label">Nombre Bibliografia</label>
+//                        <input class="form-control" type="text" name="bibliografias[${index}].NombreBibliografia" value="${bibliografia.nombreBibliografia}" maxlength="30" />
+//                    </div>
+//                </div>
+//                <div class="col-2 d-flex align-items-end"> 
+//                        <div class="form-group mb-2">
+//                            <button class="btn btn-outline-primary" type="button" onclick="eliminarBibliografia(${index})">Eliminar</button>
+//                    </div>
+//                </div>
+//            </div>
+//            <div class="form-floating mb-2">
+//                <textarea id="txtDescBibliografia${index}" class="form-control" name="bibliografias[${index}].Descripcion"  placeholder="Descripcion de la bibliografia">${bibliografia.descripcion}</textarea>
+//                <label for="txtDescBibliografia${index}">Descripcion</label>
+//            </div>
+//        </div>
+//        `
+//    ))
+//}
 
-function eliminarBibliografia(indexBibliografia) {
-    listaBibliografias.splice(indexBibliografia, 1)
-    cargarListaBibliografias()
-}
+//function eliminarBibliografia(indexBibliografia) {
+//    listaBibliografias.splice(indexBibliografia, 1)
+//    cargarListaBibliografias()
+//}
 
 async function buscarEditorial(filtro) {
     const result = await fetch(`/Editoras/BuscarEditoraJson?filtro=${filtro}`, {

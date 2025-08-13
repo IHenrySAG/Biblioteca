@@ -9,6 +9,7 @@ public class LibroVM
     public string Editora { get; set; }
     public int AnioPublicacion { get; set; }
     public string? Ciencia { get; set; }
+    public string? TipoBibliografia { get; set; }
     public string? Idioma { get; set; }
     public int Inventario { get; set; }
     public IEnumerable<string> Autores { get; set; }

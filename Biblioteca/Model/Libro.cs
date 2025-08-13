@@ -15,11 +15,12 @@ public class Libro : EntidadBase
     public int AnioPublicacion { get; set; }
     public string? Ciencia { get; set; }
     public int CodigoIdioma { get; set; }
+    public int CodigoBibliografia { get; set; }
     public int Inventario { get; set; }
 
     public Editora? Editora { get; set; }
     public Idioma? Idioma { get; set; }
-    public ICollection<LibroBibliografia>? LibrosBibliografias { get; set; }
+    public TipoBibliografia? TipoBibliografia { get; set; }
     public ICollection<LibroAutor>? LibrosAutores { get; set; }
     public ICollection<Prestamo>? Prestamos { get; set; }
 }

@@ -6,6 +6,12 @@
 
 <h4>Editar Autor</h4>
 <hr />
+@if (ViewBag.ErrorIdiomas != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorIdiomas
+    </div>
+}else{
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Editar" method="post">
@@ -32,6 +38,7 @@
         </form>
     </div>
 </div>
+}
 
 @section Scripts {
     @{

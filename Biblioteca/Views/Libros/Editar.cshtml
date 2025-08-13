@@ -7,6 +7,20 @@
 
 <h4>Editar Libro</h4>
 <hr />
+
+ @if (ViewBag.ErrorIdiomas != null || ViewBag.ErrorEditoras != null || ViewBag.ErrorAutores != null || ViewBag.ErrorBibliografias != null) 
+ { 
+     <div class="alert alert-danger"> 
+         @ViewBag.ErrorIdiomas <br /> 
+         @ViewBag.ErrorEditoras<br /> 
+         @ViewBag.ErrorAutores<br /> 
+         @ViewBag.ErrorBibliografias<br /> 
+     </div> 
+     <div class="form-group d-flex mt-3"> 
+         <a class="btn btn-primary ms-2" asp-action="Index">Volver a la lista</a> 
+     </div> 
+
+ }else{ 
 <div class="row">
     <div class="col-md-8">
         <form asp-action="Editar" method="post" id="formCrearLibro">
@@ -27,10 +41,11 @@
                 <input asp-for="Isbn" class="form-control" />
                 <span asp-validation-for="Isbn" class="text-danger"></span>
             </div>
-            @* <div class="form-group mb-2"> *@
-            @*     <label asp-for="CodigoEditora" class="control-label">Editora</label> *@
-            @*     <select asp-for="CodigoEditora" class="form-select" asp-items="ViewBag.Editoras"></select> *@
-            @* </div> *@
+            <div class="form-group mb-2">
+                <label asp-for="CodigoBibliografia" class="control-label">Tipo Bibliografia</label>
+                <select asp-for="CodigoBibliografia" class="form-select" asp-items="ViewBag.Bibliografias"></select>
+                <span asp-validation-for="CodigoBibliografia" class="text-danger"></span>
+            </div>
 
             <div id="editorial-container">
              <div class="row align-items-end">
@@ -88,38 +103,38 @@
                 </button>
             </div>
 
-            <div class="mb-2 mt-4">
-                <div id="bibliografias-container">
-                    <h5 class="control-label">Bibliografias</h5>
-                    @for (int i=0; i<Model.LibrosBibliografias.Count; i++)
-                    {
-                        var bibliografia = Model.LibrosBibliografias.ElementAt(i);
+            @* <div class="mb-2 mt-4"> *@
+            @*     <div id="bibliografias-container"> *@
+            @*         <h5 class="control-label">Bibliografias</h5> *@
+            @*         @for (int i=0; i<Model.LibrosBibliografias.Count; i++) *@
+            @*         { *@
+            @*             var bibliografia = Model.LibrosBibliografias.ElementAt(i); *@
 
-                        <div class="mb-3">
-                            <div class="row mb-0">
-                                <div class="col-10 mb-0">
-                                    <div class="form-group mb-2">
-                                        <label class="control-label">Nombre Bibliografia</label>
-                                        <input class="form-control" type="text" name="bibliografias[@i].NombreBibliografia" value="@bibliografia.TipoBibliografia.NombreBibliografia" />
-                                    </div>
-                                </div>
-                                <div class="col-2 d-flex align-items-end">
-                                    <div class="form-group mb-2">
-                                        <button class="btn btn-outline-primary" type="button" onclick="eliminarBibliografia(@i)">Eliminar</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-floating">
-                                <textarea id="txtDescBibliografia-@i" class="form-control" name="bibliografias[@i].Descripcion" placeholder="Descripcion de la bibliografia">@bibliografia.TipoBibliografia.Descripcion</textarea>
-                                <label for="txtDescBibliografia-@i">Descripcion</label>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarBibliografia">
-                    Agregar Bibliografia
-                </button>
-            </div>
+            @*             <div class="mb-3"> *@
+            @*                 <div class="row mb-0"> *@
+            @*                     <div class="col-10 mb-0"> *@
+            @*                         <div class="form-group mb-2"> *@
+            @*                             <label class="control-label">Nombre Bibliografia</label> *@
+            @*                             <input class="form-control" type="text" name="bibliografias[@i].NombreBibliografia" value="@bibliografia.TipoBibliografia.NombreBibliografia" /> *@
+            @*                         </div> *@
+            @*                     </div> *@
+            @*                     <div class="col-2 d-flex align-items-end"> *@
+            @*                         <div class="form-group mb-2"> *@
+            @*                             <button class="btn btn-outline-primary" type="button" onclick="eliminarBibliografia(@i)">Eliminar</button> *@
+            @*                         </div> *@
+            @*                     </div> *@
+            @*                 </div> *@
+            @*                 <div class="form-floating"> *@
+            @*                     <textarea id="txtDescBibliografia-@i" class="form-control" name="bibliografias[@i].Descripcion" placeholder="Descripcion de la bibliografia">@bibliografia.TipoBibliografia.Descripcion</textarea> *@
+            @*                     <label for="txtDescBibliografia-@i">Descripcion</label> *@
+            @*                 </div> *@
+            @*             </div> *@
+            @*         } *@
+            @*     </div> *@
+            @*     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarBibliografia"> *@
+            @*         Agregar Bibliografia *@
+            @*     </button> *@
+            @* </div> *@
 
             <div class="form-group d-flex mt-4">
                 <input type="submit" value="Editar" class="btn btn-warning text-white" />
@@ -128,6 +143,8 @@
         </form>
     </div>
 </div>
+
+}
 
 
 <!-- Modal -->
@@ -192,33 +209,33 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="modalAgregarBibliografia" tabindex="-1" aria-labelledby="modalBibliografiaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalEditoraLabel">Seleccionar Autor</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="frmAgregarBibliografia">
-                    <div class="form-group mb-2">
-                        <label for="txtNombreBibliografia" class="control-label">Nombre Bibliografia</label>
-                        <input id="txtNombreBibliografia" class="form-control" maxlength="30" />
-                    </div>
-                    <div class="form-floating">
-                        <textarea id="txtDescripcionBibliografia" class="form-control" placeholder="Descripcion de la bibliografia"></textarea>
-                        <label for="txtDescripcionBibliografia2">Descripcion de la Bibliografia</label>
-                    </div>
-                    <div class="form-group d-flex mt-3">
-                        <input type="submit" value="Guardar" class="btn btn-primary" />
-                        <button type="button" class="btn btn-danger ms-2" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+@* <!-- Modal --> *@
+@* <div class="modal fade" id="modalAgregarBibliografia" tabindex="-1" aria-labelledby="modalBibliografiaLabel" aria-hidden="true"> *@
+@*     <div class="modal-dialog modal-lg"> *@
+@*         <div class="modal-content"> *@
+@*             <div class="modal-header"> *@
+@*                 <h1 class="modal-title fs-5" id="modalEditoraLabel">Seleccionar Autor</h1> *@
+@*                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
+@*             </div> *@
+@*             <div class="modal-body"> *@
+@*                 <form id="frmAgregarBibliografia"> *@
+@*                     <div class="form-group mb-2"> *@
+@*                         <label for="txtNombreBibliografia" class="control-label">Nombre Bibliografia</label> *@
+@*                         <input id="txtNombreBibliografia" class="form-control" maxlength="30" /> *@
+@*                     </div> *@
+@*                     <div class="form-floating"> *@
+@*                         <textarea id="txtDescripcionBibliografia" class="form-control" placeholder="Descripcion de la bibliografia"></textarea> *@
+@*                         <label for="txtDescripcionBibliografia2">Descripcion de la Bibliografia</label> *@
+@*                     </div> *@
+@*                     <div class="form-group d-flex mt-3"> *@
+@*                         <input type="submit" value="Guardar" class="btn btn-primary" /> *@
+@*                         <button type="button" class="btn btn-danger ms-2" data-bs-dismiss="modal">Cancelar</button> *@
+@*                     </div> *@
+@*                 </form> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
 
 @section Scripts { 
     @{
@@ -237,13 +254,12 @@
             };
             var jsonEditora = JsonSerializer.Serialize(Model.Editora, options);
             var jsonAutoresSeleccionados = JsonSerializer.Serialize(Model.LibrosAutores.Select(x => x.Autor), options);
-            var jsonListaBibliografias = JsonSerializer.Serialize(Model.LibrosBibliografias.Select(x => x.TipoBibliografia), options);
+            // var jsonListaBibliografias = JsonSerializer.Serialize(Model.LibrosBibliografias.Select(x => x.TipoBibliografia), options);
         }
 
         editora=@Html.Raw(jsonEditora);
 
         autoresSeleccionados = @Html.Raw(jsonAutoresSeleccionados);
 
-        listaBibliografias = @Html.Raw(jsonListaBibliografias);
     </script>
 }

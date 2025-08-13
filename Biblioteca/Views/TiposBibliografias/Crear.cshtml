@@ -18,10 +18,11 @@
             <div class="form-floating">
                 <textarea asp-for="Descripcion" class="form-control" placeholder="Descripcion de la bibliografia"></textarea>
                 <label asp-for="Descripcion"></label>
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
             </div>
             <div class="form-group d-flex mt-3">
-                <input type="submit" value="Guardar" class="btn btn-primary" />
-                <a class="btn btn-danger ms-2" asp-action="Index">Volver a la lista</a>
+                <input type="submit" value="Guardar" class="btn btn-success" />
+                <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>
             </div>
         </form>
     </div>

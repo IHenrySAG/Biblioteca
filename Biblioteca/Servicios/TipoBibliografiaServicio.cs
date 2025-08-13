@@ -12,7 +12,7 @@ public class TipoBibliografiaServicio(ContextoBiblioteca context) : ServicioBase
         return await context.TiposBibliografias
             .AsNoTrackingWithIdentityResolution()
             .Where(x => !(x.Eliminado ?? false))
-            .Include(tb => tb.LibrosBibliografias)
+            .Include(tb => tb.Libros)
             .Where(string.IsNullOrEmpty(filtro) ?
                 tb => true :
                 tb => tb.NombreBibliografia.Contains(filtro))
@@ -23,14 +23,14 @@ public class TipoBibliografiaServicio(ContextoBiblioteca context) : ServicioBase
     {
         var tipo = await context.TiposBibliografias
             .Where(x => !(x.Eliminado ?? false))
-            .Include(tb => tb.LibrosBibliografias)
+            .Include(tb => tb.Libros)
             .FirstOrDefaultAsync(tb => tb.CodigoBibliografia == id);
 
-        // Cargar los libros relacionados a través de la relación muchos a muchos
-        foreach (var libroBibliografia in tipo?.LibrosBibliografias ?? Enumerable.Empty<LibroBibliografia>())
-        {
-            await context.Entry(libroBibliografia).Reference(lb => lb.Libro).LoadAsync();
-        }
+        //// Cargar los libros relacionados a través de la relación muchos a muchos
+        //foreach (var libroBibliografia in tipo?.LibrosBibliografias ?? Enumerable.Empty<LibroBibliografia>())
+        //{
+        //    await context.Entry(libroBibliografia).Reference(lb => lb.Libro).LoadAsync();
+        //}
 
         return tipo;
     }

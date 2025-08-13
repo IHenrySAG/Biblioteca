@@ -7,6 +7,12 @@
 <h4>@ViewData["Title"]</h4>
 <hr />
 
+@if (ViewBag.ErrorTandas != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorTandas
+    </div>
+}else{
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Editar" method="post">
@@ -58,6 +64,7 @@
         </form>
     </div>
 </div>
+}
 
 @section Scripts {
     @{

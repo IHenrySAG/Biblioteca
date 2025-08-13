@@ -12,20 +12,7 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
 {
     public override async Task<IEnumerable<Libro>> ObtenerTodosAsync(string filtro=null)
     {
-        return await context.Libros
-            .AsNoTrackingWithIdentityResolution()
-            .Where(x=>!(x.Eliminado??false))
-            .Include(l => l.Idioma)
-            .Include(l => l.Editora)
-            .Include(l => l.LibrosAutores)
-            .ThenInclude(x=>x.Autor)
-            .Where(string.IsNullOrEmpty(filtro) ?
-                l => true :
-                l => l.Titulo.Contains(filtro) ||
-                      l.SignaturaTopografica.Contains(filtro) ||
-                      l.Isbn.Contains(filtro) ||
-                      l.Editora.NombreEditora.Contains(filtro) ||
-                      l.Idioma.NombreIdioma.Contains(filtro))
+        return await ConsultarListaConFiltro(filtro)
             .ToListAsync();
     }
 
@@ -50,23 +37,29 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
             .ToListAsync();
     }
 
+    public async Task<List<Libro>> ObtenerPorIdBibliografiaAsync(int id, string? filtro)
+    {
+        return await ConsultarListaConFiltro(filtro)
+            .Where(l => l.CodigoBibliografia == id)
+            .ToListAsync();
+    }
+
     public override async Task<Libro?> ObtenerPorIdAsync(int id)
     {
         var libro = await context.Libros
             .Where(x => !(x.Eliminado ?? false))
             .Include(l => l.Idioma)
             .Include(l => l.Editora)
-            .Include(l => l.LibrosBibliografias)
-            .ThenInclude(lb=>lb.TipoBibliografia)
+            .Include(l => l.TipoBibliografia)
             .Include(l => l.LibrosAutores)
-            //.ThenInclude(la=>la.Autor)
+            .ThenInclude(la=>la.Autor)
             .Where(l => l.CodigoLibro == id)
             .FirstOrDefaultAsync();
 
-        foreach (var libroBibliografia in libro?.LibrosBibliografias ?? Enumerable.Empty<LibroBibliografia>())
-        {
-            await context.Entry(libroBibliografia).Reference(la => la.TipoBibliografia).LoadAsync();
-        }
+        //foreach (var libroBibliografia in libro?.LibrosBibliografias ?? Enumerable.Empty<LibroBibliografia>())
+        //{
+        //    await context.Entry(libroBibliografia).Reference(la => la.TipoBibliografia).LoadAsync();
+        //}
 
         foreach (var libroAutor in libro?.LibrosAutores ?? Enumerable.Empty<LibroAutor>())
         {
@@ -96,15 +89,16 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
         libro.AnioPublicacion = entidad.AnioPublicacion;
         libro.Ciencia = entidad.Ciencia;
         libro.CodigoIdioma = entidad.CodigoIdioma;
+        libro.CodigoBibliografia = entidad.CodigoBibliografia;
         libro.Inventario = entidad.Inventario;
 
-        var bibliografiasAEliminar = libro.LibrosBibliografias.Select(x => x.TipoBibliografia);
+        //var bibliografiasAEliminar = libro.LibrosBibliografias.Select(x => x.TipoBibliografia);
 
-        context.TiposBibliografias.RemoveRange(bibliografiasAEliminar);
-        context.LibrosBibliografias.RemoveRange(libro.LibrosBibliografias);
+        //context.TiposBibliografias.RemoveRange(bibliografiasAEliminar);
+        //context.LibrosBibliografias.RemoveRange(libro.LibrosBibliografias);
         context.LibrosAutores.RemoveRange(libro.LibrosAutores);
 
-        libro.LibrosBibliografias = entidad.LibrosBibliografias;
+        //libro.LibrosBibliografias = entidad.LibrosBibliografias;
         libro.LibrosAutores = entidad.LibrosAutores;
 
         await context.SaveChangesAsync();
@@ -119,6 +113,7 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
             .Where(x => !(x.Eliminado ?? false))
             .Include(l => l.Idioma)
             .Include(l => l.Editora)
+            .Include(l => l.TipoBibliografia)
             .Include(l => l.LibrosAutores)
             .ThenInclude(la => la.Autor)
             .Where(string.IsNullOrEmpty(filtro) ?
@@ -126,7 +121,9 @@ public class LibroServicio(ContextoBiblioteca context) : ServicioBase<Libro>(con
                 l => l.Titulo.Contains(filtro) ||
                       l.SignaturaTopografica.Contains(filtro) ||
                       l.Isbn.Contains(filtro) ||
+                      l.TipoBibliografia.NombreBibliografia.Contains(filtro) ||
                       l.Editora.NombreEditora.Contains(filtro) ||
+                      l.LibrosAutores.Any(la=>la.Autor.NombreAutor.Contains(filtro)) ||
                       l.Idioma.NombreIdioma.Contains(filtro));
     }
 }

@@ -20,7 +20,6 @@ public class ContextoBiblioteca: DbContext
     public DbSet<Idioma> Idiomas { get; set; }
     public DbSet<Libro> Libros { get; set; }
     public DbSet<LibroAutor> LibrosAutores { get; set; }
-    public DbSet<LibroBibliografia> LibrosBibliografias { get; set; }
     public DbSet<Prestamo> Prestamos { get; set; }
     public DbSet<Rol> Roles { get; set; }
     public DbSet<TandaLabor> TandasLabor { get; set; }
@@ -91,6 +90,7 @@ public class ContextoBiblioteca: DbContext
             builder.Property(l => l.AnioPublicacion).HasColumnName("ANIO_PUBLICACION").IsRequired();
             builder.Property(l => l.Ciencia).HasColumnName("CIENCIA").HasMaxLength(30);
             builder.Property(l => l.CodigoIdioma).HasColumnName("CODIGO_IDIOMA").IsRequired();
+            builder.Property(l => l.CodigoBibliografia).HasColumnName("CODIGO_BIBLIOGRAFIA").IsRequired();
             builder.Property(l => l.Inventario).HasColumnName("INVENTARIO").IsRequired();
             builder.Property(l => l.Eliminado).HasColumnName("ELIMINADO");
             builder.HasOne(l => l.Editora)
@@ -101,24 +101,10 @@ public class ContextoBiblioteca: DbContext
                 .WithMany(i => i.Libros)
                 .HasForeignKey(l => l.CodigoIdioma)
                 .HasConstraintName("FK_IDIOMA_LIBROS");
-        });
-
-        // LIBROS_BIBLIOGRAFIAS (Many-to-Many)
-        modelBuilder.Entity<LibroBibliografia>(builder =>
-        {
-            builder.ToTable("LIBROS_BIBLIOGRAFIAS");
-            builder.HasKey(lb => lb.Id);
-            builder.Property(lb => lb.Id).HasColumnName("ID");
-            builder.Property(lb => lb.CodigoLibro).HasColumnName("CODIGO_LIBRO").IsRequired();
-            builder.Property(lb => lb.CodigoBibliografia).HasColumnName("CODIGO_BIBLIOGRAFIA").IsRequired();
-            builder.HasOne(lb => lb.Libro)
-                .WithMany(l => l.LibrosBibliografias)
-                .HasForeignKey(lb => lb.CodigoLibro)
-                .HasConstraintName("FK_LIBROS_BIBLIOGRAFIAS_LIBRO");
-            builder.HasOne(lb => lb.TipoBibliografia)
-                .WithMany(tb => tb.LibrosBibliografias)
-                .HasForeignKey(lb => lb.CodigoBibliografia)
-                .HasConstraintName("FK_LIBROS_BIBLIOGRAFIAS_BIBLIOGRAFIA");
+            builder.HasOne(l => l.TipoBibliografia)
+                .WithMany(i => i.Libros)
+                .HasForeignKey(l => l.CodigoBibliografia)
+                .HasConstraintName("FK_BIBLIOGRAFIA_LIBROS");
         });
 
         // LIBROS_AUTORES (Many-to-Many)

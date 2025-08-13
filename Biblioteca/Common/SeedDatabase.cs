@@ -15,7 +15,7 @@ public class SeedDatabase
                 Cedula = "00123456789",
                 CodigoTanda = 1, // Asumiendo que la tanda laboral con código 1 existe
                 NombreUsuario = "admin",
-                Contrasenia = Encryption.GetMD5("AdminBiblioteca123"),
+                Contrasenia = Encryption.GetMD5("Admin123"),
                 CodigoRol = (int)ERoles.ADMIN
             };
 

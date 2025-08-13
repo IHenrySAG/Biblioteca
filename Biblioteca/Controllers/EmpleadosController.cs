@@ -49,6 +49,7 @@ namespace Biblioteca.Controllers
                 return NotFound();
 
             ViewBag.EditarDatos = rolUsuarioActual == nameof(ERoles.ADMIN);
+            ViewBag.Rol = HttpContext.Session.GetString("Rol");
 
             return View(empleado);
         }
@@ -59,7 +60,7 @@ namespace Biblioteca.Controllers
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
             if (!tandas.Any())
-                return RedirectToAction("Crear", "TandasLabor", new { RedirectedFrom = "CreateEmpleado" });
+                ViewBag.ErrorTandas = "No hay tandas de horario registradas. Por favor, registre al menos una tanda antes de registrar un empleado.";
 
             var roles = await context.Roles
                 .OrderByDescending(x=>x.NombreRol)
@@ -76,6 +77,9 @@ namespace Biblioteca.Controllers
         public async Task<IActionResult> Crear( Empleado empleado)
         {
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
+
+            if (!tandas.Any())
+                ViewBag.ErrorTandas = "No hay tandas de horario registradas. Por favor, registre al menos una tanda antes de registrar un empleado.";
 
             var roles = await context.Roles
                 .OrderByDescending(x => x.NombreRol)
@@ -120,7 +124,7 @@ namespace Biblioteca.Controllers
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
             if (!tandas.Any())
-                return NotFound();
+                ViewBag.ErrorTandas = "No hay tandas de horario registradas. Por favor, registre al menos una tanda antes de editar un empleado.";
 
             ViewData["TandasLabor"] = new SelectList(tandas, "CodigoTanda", "NombreTanda");
             ViewBag.Roles = new SelectList(context.Roles.OrderByDescending(x => x.NombreRol), "CodigoRol", "NombreRol", empleado.CodigoRol);
@@ -171,6 +175,9 @@ namespace Biblioteca.Controllers
 
             var tandas = await servicioTandaLabor.ObtenerTodosAsync();
 
+            if (!tandas.Any())
+                ViewBag.ErrorTandas = "No hay tandas de horario registradas. Por favor, registre al menos una tanda antes de editar un empleado.";
+
             ViewData["TandasLabor"] = new SelectList(tandas, "CodigoTanda", "NombreTanda");
             return View(empleadoVM);
         }
@@ -197,6 +204,7 @@ namespace Biblioteca.Controllers
         }
 
         // GET: Empleados/CambiarContrasenia/5
+        [Authorization(nameof(ERoles.CATALOGADOR), nameof(ERoles.BIBLIOTECARIO))]
         public async Task<IActionResult> CambiarContrasenia(int? id)
         {
             if (id == null)
@@ -228,17 +236,22 @@ namespace Biblioteca.Controllers
         {
             var empleado=await service.ObtenerPorIdAsync(model.CodigoEmpleado);
 
+            if (empleado == null)
+            {
+                return NotFound();
+            }
+
+            string rolEmpleadoActual = HttpContext.Session.GetString("Rol");
+
+            ViewBag.NombreUsuario = empleado.NombreUsuario;
+            ViewBag.IsAdmin = rolEmpleadoActual == nameof(ERoles.ADMIN);
+
             if (!ModelState.IsValid || (model.ContraseniaActual ?? "").Trim().IsNullOrEmpty())
             {
                 ModelState.AddModelError("", "Por favor, complete todos los campos correctamente.");
                 return View(model);
             }
-
-            if (empleado == null)
-            {
-                ModelState.AddModelError("", "Empleado no encontrado.");
-                return View(model);
-            }
+                       
 
             if (model.NuevaContrasenia != model.ConfirmarContrasenia)
             {
@@ -279,7 +292,7 @@ namespace Biblioteca.Controllers
             string rolEmpleado = HttpContext.Session.GetString("Rol");
             int codigoEmpleado = HttpContext.Session.GetInt32("CodigoEmpleado") ?? 0;
 
-            return RedirectToAction(nameof(Detalles), codigoEmpleado);
+            return RedirectToAction(nameof(Detalles), new { id = codigoEmpleado });
         }
 
         [HttpPost]
@@ -288,34 +301,39 @@ namespace Biblioteca.Controllers
         {
             var empleado = await service.ObtenerPorIdAsync(model.CodigoEmpleado);
 
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Por favor, complete todos los campos correctamente.");
-                return View(model);
-            }
-
             if (empleado == null)
             {
                 ModelState.AddModelError("", "Empleado no encontrado.");
-                return View(model);
+                return View(nameof(CambiarContrasenia), model);
+            }
+
+            string rolEmpleadoActual = HttpContext.Session.GetString("Rol");
+
+            ViewBag.NombreUsuario = empleado.NombreUsuario;
+            ViewBag.IsAdmin = rolEmpleadoActual == nameof(ERoles.ADMIN);
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Por favor, complete todos los campos correctamente.");
+                return View(nameof(CambiarContrasenia), model);
             }
 
             if (model.NuevaContrasenia != model.ConfirmarContrasenia)
             {
                 ModelState.AddModelError("ConfirmarContrasenia", "Las contraseñas no coinciden.");
-                return View(model);
+                return View(nameof(CambiarContrasenia), model);
             }
 
             if (model.NuevaContrasenia.Length < 8)
             {
                 ModelState.AddModelError("NuevaContrasenia", "La nueva contraseña debe tener al menos 8 caracteres.");
-                return View(model);
+                return View(nameof(CambiarContrasenia), model);
             }
 
             if (Encryption.GetMD5(model.NuevaContrasenia) == empleado.Contrasenia)
             {
                 ModelState.AddModelError("NuevaContrasenia", "La nueva contraseña no puede ser la misma que la actual.");
-                return View(model);
+                return View(nameof(CambiarContrasenia), model);
             }
 
             empleado.Contrasenia = Encryption.GetMD5(model.NuevaContrasenia);
@@ -327,7 +345,7 @@ namespace Biblioteca.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"Error al cambiar la contraseña: {ex.Message}");
-                return View(model);
+                return View(nameof(CambiarContrasenia), model);
             }
 
             string rolEmpleado = HttpContext.Session.GetString("Rol");

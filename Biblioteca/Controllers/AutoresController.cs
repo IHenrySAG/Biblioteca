@@ -95,7 +95,7 @@ namespace Biblioteca.Controllers
         // POST: Autores/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("CodigoAutor,NombreAutor,CodigoIdioma,PaisOrigen,Estado")] Autor autor)
+        public async Task<IActionResult> Crear(Autor autor)
         {
             if (ModelState.IsValid)
             {
@@ -106,7 +106,7 @@ namespace Biblioteca.Controllers
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Crear", "Idiomas", new { RedirectedFrom = "CreateAutor" });
+                ViewBag.ErrorIdiomas = "No hay idiomas registrados. Por favor, registre al menos un idioma antes de registrar un autor.";
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             return View(autor);
@@ -125,7 +125,7 @@ namespace Biblioteca.Controllers
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Crear", "Idiomas", new { RedirectedFrom = "EditAutor" });
+                ViewBag.ErrorIdiomas = "No hay idiomas registrados. Por favor, registre al menos un idioma antes de editar un autor.";
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             return View(autor);
@@ -134,7 +134,7 @@ namespace Biblioteca.Controllers
         // POST: Autores/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("CodigoAutor,NombreAutor,CodigoIdioma,PaisOrigen,Estado")] Autor autor)
+        public async Task<IActionResult> Editar(int id, Autor autor)
         {
             if (id != autor.CodigoAutor)
                 return NotFound();
@@ -158,7 +158,7 @@ namespace Biblioteca.Controllers
             var idiomas = await servicioIdioma.ObtenerTodosAsync();
 
             if (!idiomas.Any())
-                return RedirectToAction("Crear", "Idiomas", new { RedirectedFrom = "EditAutor" });
+                ViewBag.ErrorIdiomas = "No hay idiomas registrados. Por favor, registre al menos un idioma antes de editar un autor.";
 
             ViewData["Idiomas"] = new SelectList(idiomas, "CodigoIdioma", "NombreIdioma");
             return View(autor);

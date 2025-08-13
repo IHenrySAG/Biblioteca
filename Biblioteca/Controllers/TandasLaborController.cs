@@ -42,7 +42,7 @@ namespace Biblioteca.Controllers
         // POST: TandasLabor/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("CodigoTanda,NombreTanda,HoraInicio,HoraFin,Estado")] TandaLabor tanda)
+        public async Task<IActionResult> Crear(TandaLabor tanda)
         {
             if (ModelState.IsValid)
             {
@@ -68,7 +68,7 @@ namespace Biblioteca.Controllers
         // POST: TandasLabor/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("CodigoTanda,NombreTanda,HoraInicio,HoraFin,Estado")] TandaLabor tanda)
+        public async Task<IActionResult> Editar(int id, TandaLabor tanda)
         {
             if (id != tanda.CodigoTanda)
                 return NotFound();

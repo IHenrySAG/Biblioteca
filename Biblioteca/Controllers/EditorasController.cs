@@ -80,7 +80,7 @@ namespace Biblioteca.Controllers
         // POST: Editoras/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear([Bind("CodigoEditora,NombreEditora,Descripcion,Estado")] Editora editora)
+        public async Task<IActionResult> Crear(Editora editora)
         {
             if (ModelState.IsValid)
             {
@@ -106,7 +106,7 @@ namespace Biblioteca.Controllers
         // POST: Editoras/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, [Bind("CodigoEditora,NombreEditora,Descripcion,Estado")] Editora editora)
+        public async Task<IActionResult> Editar(int id, Editora editora)
         {
             if (id != editora.CodigoEditora)
                 return NotFound();

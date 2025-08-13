@@ -50,6 +50,7 @@ create table LIBROS(
 	ANIO_PUBLICACION int not null,
 	CIENCIA varchar(30) null,
 	CODIGO_IDIOMA int not null,
+	CODIGO_BIBLIOGRAFIA int not null,
 	INVENTARIO int not null,
 	ELIMINADO bit null
 )
@@ -65,20 +66,8 @@ add constraint FK_IDIOMA_LIBROS
 foreign key (CODIGO_IDIOMA) references IDIOMAS(CODIGO_IDIOMA)
 go
 
-create table LIBROS_BIBLIOGRAFIAS(
-	ID int not null primary key identity(1,1),
-	CODIGO_LIBRO int not null,
-	CODIGO_BIBLIOGRAFIA int not null
-);
-go
-
-alter table LIBROS_BIBLIOGRAFIAS
-add constraint FK_LIBROS_BIBLIOGRAFIAS_LIBRO
-foreign key (CODIGO_LIBRO) references LIBROS(CODIGO_LIBRO)
-go
-
-alter table LIBROS_BIBLIOGRAFIAS
-add constraint FK_LIBROS_BIBLIOGRAFIAS_BIBLIOGRAFIA
+alter table LIBROS
+add constraint FK_BIBLIOGRAFIA_LIBROS
 foreign key (CODIGO_BIBLIOGRAFIA) references TIPOS_BIBLIOGRAFIAS(CODIGO_BIBLIOGRAFIA)
 go
 

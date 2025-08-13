@@ -1,4 +1,5 @@
 @model Biblioteca.Model.Libro
+@using Biblioteca.Common
 
 @{
     ViewData["Title"] = "Detalles "+Model.Titulo;
@@ -40,6 +41,10 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Editora.NombreEditora)
         </dd>
+        <dt class="col-sm-2">Tipo Bibliografia</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TipoBibliografia.NombreBibliografia)
+        </dd>
         <dt class="col-sm-2">Año Publicacion</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.AnioPublicacion)
@@ -56,23 +61,25 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Inventario)
         </dd>
-        @if (Model.LibrosBibliografias.Count > 0)
-        {
-            <dt class="col-sm-2">Bibliografias</dt>
-            <dd class="col-sm-10">
-                <ul>
-                    @foreach (var item in Model.LibrosBibliografias)
-                    {
-                        <li>
-                            <h6>@Html.DisplayFor(modelItem => item.TipoBibliografia.NombreBibliografia)</h6>
-                            @Html.DisplayFor(modelItem => item.TipoBibliografia.Descripcion)
-                        </li>
-                    }
-                </ul>
-            </dd>
-        }
+        @* @if (Model.LibrosBibliografias.Count > 0) *@
+        @* { *@
+        @*     <dt class="col-sm-2">Bibliografias</dt> *@
+        @*     <dd class="col-sm-10"> *@
+        @*         <ul> *@
+        @*             @foreach (var item in Model.LibrosBibliografias) *@
+        @*             { *@
+        @*                 <li> *@
+        @*                     <h6>@Html.DisplayFor(modelItem => item.TipoBibliografia.NombreBibliografia)</h6> *@
+        @*                     @Html.DisplayFor(modelItem => item.TipoBibliografia.Descripcion) *@
+        @*                 </li> *@
+        @*             } *@
+        @*         </ul> *@
+        @*     </dd> *@
+        @* } *@
     </dl>
-    <a href="/Libros/@Model.CodigoLibro/Prestamos" class="btn btn-info text-white">Ver prestamos del libro</a>
+    @if(new List<string> { ERoles.ADMIN.ToString(), ERoles.BIBLIOTECARIO.ToString() }.Contains(ViewBag.Rol)){
+        <a href="/Libros/@Model.CodigoLibro/Prestamos" class="btn btn-info text-white">Ver prestamos del libro</a>
+    }
     <div class="form-group d-flex mt-3">
         <a asp-action="Editar" class="btn btn-warning text-white" asp-route-id="@Model.CodigoLibro">Editar</a>
         <a class="btn btn-secondary ms-2" asp-action="Index">Volver a la lista</a>

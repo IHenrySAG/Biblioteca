@@ -40,13 +40,19 @@
                 <span asp-validation-for="Isbn" class="text-danger"></span>
             </div>
             
-            <div id="editorial-container">
-                <div class="form-group my-3">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeleccionarEditora">
-                        Seleccionar Editorial
-                    </button>
-                </div>               
+            <div class="form-group mb-2">
+                <label asp-for="CodigoBibliografia" class="control-label">Tipo Bibliografia</label>
+                <select asp-for="CodigoBibliografia" class="form-select" asp-items="ViewBag.Bibliografias"></select>
+                <span asp-validation-for="CodigoBibliografia" class="text-danger"></span>
             </div>
+
+            @* <div id="editorial-container"> *@
+            @*     <div class="form-group my-3"> *@
+            @*         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeleccionarEditora"> *@
+            @*             Seleccionar Editorial *@
+            @*         </button> *@
+            @*     </div>                *@
+            @* </div> *@
             
             <div class="form-group mb-2">
                 <label asp-for="AnioPublicacion" class="control-label">Año Publicacion</label>
@@ -157,32 +163,32 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="modalAgregarBibliografia" tabindex="-1" aria-labelledby="modalBibliografiaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalEditoraLabel">Agregar Bibliografia</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="frmAgregarBibliografia">
-                    <div class="form-group mb-2">
-                        <label for="txtNombreBibliografia" class="control-label">Nombre Bibliografia</label>
-                        <input id="txtNombreBibliografia" class="form-control" maxlength="30" />
-                    </div>
-                    <div class="form-floating">
-                        <textarea id="txtDescripcionBibliografia" class="form-control" placeholder="Descripcion de la bibliografia"></textarea>
-                        <label for="txtDescripcionBibliografia2">Descripcion de la Bibliografia</label>
-                    </div>
-                    <div class="form-group d-flex mt-3">
-                        <input type="submit" value="Guardar" class="btn btn-primary" />
-                        <button type="button" class="btn btn-danger ms-2" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+@* <div class="modal fade" id="modalAgregarBibliografia" tabindex="-1" aria-labelledby="modalBibliografiaLabel" aria-hidden="true"> *@
+@*     <div class="modal-dialog modal-lg"> *@
+@*         <div class="modal-content"> *@
+@*             <div class="modal-header"> *@
+@*                 <h1 class="modal-title fs-5" id="modalEditoraLabel">Agregar Bibliografia</h1> *@
+@*                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
+@*             </div> *@
+@*             <div class="modal-body"> *@
+@*                 <form id="frmAgregarBibliografia"> *@
+@*                     <div class="form-group mb-2"> *@
+@*                         <label for="txtNombreBibliografia" class="control-label">Nombre Bibliografia</label> *@
+@*                         <input id="txtNombreBibliografia" class="form-control" maxlength="30" /> *@
+@*                     </div> *@
+@*                     <div class="form-floating"> *@
+@*                         <textarea id="txtDescripcionBibliografia" class="form-control" placeholder="Descripcion de la bibliografia"></textarea> *@
+@*                         <label for="txtDescripcionBibliografia2">Descripcion de la Bibliografia</label> *@
+@*                     </div> *@
+@*                     <div class="form-group d-flex mt-3"> *@
+@*                         <input type="submit" value="Guardar" class="btn btn-primary" /> *@
+@*                         <button type="button" class="btn btn-danger ms-2" data-bs-dismiss="modal">Cancelar</button> *@
+@*                     </div> *@
+@*                 </form> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

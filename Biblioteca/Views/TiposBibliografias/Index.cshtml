@@ -6,8 +6,13 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <a class="btn btn-success align-self-end" asp-action="Crear">Nuevo Tipo de Bibliografía</a>
-    <h1>Lista de tipos de bibliografía</h1>
-    <div></div>
+    <h2>Lista de tipos de bibliografía</h2>
+    <div>
+        <form class="d-flex" role="search" asp-action="Index">
+            <input name="filtro" class="form-control me-2" type="search" value="@ViewBag.Filtro" placeholder="Search" aria-label="Search" />
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
 </div>
 
 <table class="table table-striped">
@@ -27,7 +32,7 @@
                 <td>@Html.DisplayFor(modelItem => item.NombreBibliografia)</td>
                 <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
                 <td>
-                    <a class="btn btn-success" asp-action="Detalles" asp-route-id="@item.CodigoBibliografia">Ver detalles</a>
+                    <a class="btn btn-info text-white" asp-action="Detalles" asp-route-id="@item.CodigoBibliografia">Detalles</a>
                     <a class="btn btn-warning text-white ms-1" asp-action="Editar" asp-route-id="@item.CodigoBibliografia">Editar</a>
                     <a class="btn btn-danger ms-1" asp-action="Eliminar" asp-route-id="@item.CodigoBibliografia">Eliminar</a>
                 </td>
